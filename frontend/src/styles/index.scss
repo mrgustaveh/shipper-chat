@@ -1,0 +1,43 @@
+@use "./constants/colors" as colors;
+@use "./constants/mixins" as mixins;
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @include mixins.usebasefont();
+  color: colors.$text_primary;
+  font-weight: 300;
+  background-color: colors.$bg_primary;
+}
+
+input {
+  border: 0;
+  outline: none;
+  outline-color: transparent;
+}
+
+a,
+button {
+  @include mixins.flexmixin(row, nowrap, center, center, 0);
+
+  border: 0;
+  outline: none;
+  outline-color: transparent;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  display: none !important;
+}
