@@ -1,0 +1,32 @@
+# Common
+node_modules/
+.env
+.env.*
+!.env.example
+dist/
+build/
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.vscode/
+.idea/
+
+node_modules/
+dist/
+.env
+backend/*.db
+backend/*.db-journal
+
+/build/
+.next/
+out/
+
+# Local configuration
+.direnv/
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
