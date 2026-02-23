@@ -1,0 +1,61 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Account {
+  accountId  String   @id @default(uuid()) @map("account_id") @db.Uuid
+  clerkId    String?  @unique @map("clerk_id")
+  email      String?  @unique
+  username   String?  @unique
+  displayPic String?  @map("display_pic")
+  created    DateTime @default(now())
+
+  chatsAsUser1  UserChat[]  @relation("User1")
+  chatsAsUser2  UserChat[]  @relation("User2")
+  messages      Message[]
+
+  @@map("accounts")
+}
+
+model UserChat {
+  chatId         String    @id @default(uuid()) @map("chat_id") @db.Uuid
+  user1Id        String    @map("user1_id") @db.Uuid
+  user2Id        String    @map("user2_id") @db.Uuid
+  user1Archived  Boolean   @default(false) @map("user1_archived")
+  user2Archived  Boolean   @default(false) @map("user2_archived")
+  user1LastReadAt DateTime? @map("user1_last_read_at")
+  user2LastReadAt DateTime? @map("user2_last_read_at")
+  created        DateTime  @default(now())
+  updated        DateTime  @updatedAt @map("updated")
+
+  user1    Account   @relation("User1", fields: [user1Id], references: [accountId], onDelete: Cascade)
+  user2    Account   @relation("User2", fields: [user2Id], references: [accountId], onDelete: Cascade)
+  messages Message[]
+
+  @@unique([user1Id, user2Id])
+  @@map("user_chats")
+}
+
+
+
+
+
+model Message {
+  messageId   String   @id @default(uuid()) @map("message_id") @db.Uuid
+  senderId    String   @map("sender_id") @db.Uuid
+  textContent String   @map("text_content")
+  media       String[] @default([])
+  links       String[] @default([])
+  docs        String[] @default([])
+  userChatId String?  @map("user_chat_id") @db.Uuid
+  created    DateTime @default(now())
+
+  sender    Account    @relation(fields: [senderId], references: [accountId], onDelete: Cascade)
+  userChat  UserChat?  @relation(fields: [userChatId], references: [chatId], onDelete: Cascade)
+
+  @@map("messages")
+}
