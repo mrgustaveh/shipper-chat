@@ -3,6 +3,8 @@ import { ChatHeader } from "./components/chatheader/ChatHeader";
 import { CreateMessage } from "./components/messages/Create";
 import { SearchFilter } from "./components/messages/Filter";
 import { MessagesList } from "./components/messages/MessagesList";
+import { ConversationHeader } from "./components/conversation/ConverssationHeader";
+import { ConversationMesssages } from "./components/conversation/ConversationMessages";
 import { MessageInput } from "./components/conversation/MessageInput";
 import "./index.scss";
 
@@ -24,6 +26,8 @@ export default function Home() {
           </div>
 
           <div id="chat_container">
+            <ConversationHeader />
+            <ConversationMesssages />
             <MessageInput />
           </div>
         </div>

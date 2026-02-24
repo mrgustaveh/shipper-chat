@@ -4,7 +4,9 @@
 #messageinput {
   @include mixins.flexmixin(row, nowrap, center, space-between, 0);
   position: sticky;
+  width: 100%;
   height: 3rem;
+  margin-top: 0.5rem;
   padding: 0.5rem 0.25rem 0.5rem 0.75rem;
   border: 1px solid colors.$divider;
   border-radius: 2rem;

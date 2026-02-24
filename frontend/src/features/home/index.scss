@@ -29,6 +29,7 @@
       }
 
       #chat_container {
+        @include mixins.flexmixin(column, nowrap, flex-start, space-between, 0);
         width: calc(100vw - 33rem);
         height: 100%;
         padding: 0.75rem;
