@@ -10,6 +10,7 @@ import { RxCross2 } from "react-icons/rx";
 import { useApiAuth } from "@/hooks/data/useapiauth";
 import { useChats } from "@/hooks/data/usechats";
 import { useChatStore } from "../../store/chat";
+import { usePresenceStore } from "../../store/presence";
 import { UiDrawer } from "@/components/ui/uiDrawer";
 import { UiPopOver } from "@/components/ui/UiPopOver";
 import { COLORS } from "@/lib/constants";
@@ -21,6 +22,8 @@ export const ConversationHeader = () => {
   const [popoveropened, { open: openpopover, close: closepopover }] =
     useDisclosure();
   const selectedchatid = useChatStore((s) => s.selectedChatId);
+  const typingusers = useChatStore((s) => s.typingUsers);
+  const onlineusers = usePresenceStore((s) => s.onlineUsers);
   const { getAccountQuery } = useApiAuth();
   const { listChatsQuery } = useChats({});
 
@@ -30,13 +33,22 @@ export const ConversationHeader = () => {
     );
   }, [selectedchatid, listChatsQuery?.data]);
 
-  const renderuser: Account | undefined =
-    getAccountQuery?.data?.accountId == activeChat?.user1?.accountId
+  const renderuser = useMemo(() => {
+    return getAccountQuery?.data?.accountId == activeChat?.user1?.accountId
       ? activeChat?.user2
       : activeChat?.user1;
+  }, [activeChat, getAccountQuery?.data]);
+
+  const renderUserisonline = useMemo(() => {
+    return onlineusers[renderuser?.accountId ?? ""];
+  }, [onlineusers, renderuser?.accountId]);
+
+  const renderUseristyping = useMemo(() => {
+    return typingusers[renderuser?.accountId ?? ""];
+  }, [typingusers, renderuser?.accountId]);
 
   const closeChat = () => {
-    useChatStore.setState({ selectedChatId: "" });
+    useChatStore.setState({ selectedChatId: "", chatMessages: [] });
     closepopover();
   };
 
@@ -51,7 +63,10 @@ export const ConversationHeader = () => {
         {selectedchatid !== "" && (
           <p className="uname_status">
             {renderuser?.username}
-            <span>Online</span>
+            <span>
+              {renderUserisonline ? "Online" : "Offline"}{" "}
+              {renderUseristyping && "| Typing..."}
+            </span>
           </p>
         )}
       </button>
@@ -84,10 +99,11 @@ export const ConversationHeader = () => {
             trapFocus: true,
             withArrow: true,
             onChange: closepopover,
+            offset: 0,
           }}
         >
           <button className="btn_close_chat" onClick={closeChat}>
-            <RxCross2 size={18} color={COLORS.danger} /> Close Chat
+            <RxCross2 size={16} color={COLORS.text_secondary} /> Close Chat
           </button>
         </UiPopOver>
       </div>

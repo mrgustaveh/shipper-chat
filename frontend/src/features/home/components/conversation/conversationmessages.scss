@@ -5,39 +5,27 @@
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  padding-top: 1.5rem;
+  padding: 0.75rem;
   border-radius: 1rem;
-  background-color: colors.$bg_tertiary;
+  background-color: colors.$bg_cards;
 
   .chat_message_ctr {
     @include mixins.flexmixin(row, nowrap, flex-start, flex-start, 0);
+    margin-bottom: 0.5rem;
 
     .chat_message {
       @include mixins.flexmixin(row, nowrap, flex-start, flex-start, 0.25rem);
-      max-width: 90%;
-
-      @include mixins.desktop() {
-        max-width: 60%;
-      }
-
-      ._profile {
-        width: 2.25rem;
-        height: 2.25rem;
-        object-fit: contain;
-        object-position: center;
-        border: 1px solid colors.$divider;
-        border-radius: 50%;
-      }
+      max-width: 60%;
 
       ._message_timer {
-        @include mixins.flexmixin(column, nowrap, flex-end, flex-end, 0);
+        @include mixins.flexmixin(column, nowrap, flex-start, flex-start, 0);
 
         ._message {
-          padding: 0.25rem 0.625rem;
+          padding: 0.35rem 0.625rem;
           border-radius: 0.875rem;
           font-size: 0.875rem;
           font-weight: 500;
-          background-color: rgba($color: colors.$divider, $alpha: 0.125);
+          background-color: colors.$bg_secondary;
         }
 
         ._timer {
@@ -55,13 +43,10 @@
       }
 
       ._message_timer {
-        align-items: flex-start;
-        justify-content: flex-start;
+        align-items: flex-end;
+        justify-content: flex-end;
       }
     }
-
-    // &.chat_message_received {
-    // }
   }
 
   .no_messages {

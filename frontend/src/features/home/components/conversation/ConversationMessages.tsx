@@ -2,14 +2,27 @@ import { useEffect, useRef } from "react";
 import { TbMessage } from "react-icons/tb";
 import { useChatStore } from "../../store/chat";
 import { useApiAuth } from "@/hooks/data/useapiauth";
+import { useChats } from "@/hooks/data/usechats";
 import type { Message } from "@/lib/api/entities";
 import { dateDistanceToNow } from "@/lib/utils";
 import "./conversationmessages.scss";
 
 export const ConversationMesssages = () => {
-  const { selectedChatId, chatMessages } = useChatStore();
+  const selectedChatId = useChatStore((s) => s.selectedChatId);
+  const chatMessages = useChatStore((s) => s.chatMessages);
   const { getAccountQuery } = useApiAuth();
+  const { listChatMessagesQuery } = useChats({ chatId: selectedChatId });
+
   const ctrRef = useRef<HTMLDivElement>(null!);
+
+  useEffect(() => {
+    if (
+      listChatMessagesQuery?.data &&
+      listChatMessagesQuery?.data?.length > 0
+    ) {
+      useChatStore.setState({ chatMessages: listChatMessagesQuery?.data });
+    }
+  }, [selectedChatId, listChatMessagesQuery?.data]);
 
   useEffect(() => {
     ctrRef.current.scrollTop = ctrRef.current.scrollHeight;
@@ -62,13 +75,6 @@ const ChatMessage = ({
       className={`chat_message_ctr ${sender?.accountId == currentUserId ? "chat_message_sent" : "chat_message_received"}`}
     >
       <div className="chat_message">
-        <img
-          src={sender?.displayPic ?? "/icon-bg.png"}
-          alt="profile"
-          loading="lazy"
-          className="_profile"
-        />
-
         <div className="_message_timer">
           <span className="_message">{textContent}</span>
           <span className="_timer">{dateDistanceToNow(created)}</span>

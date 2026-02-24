@@ -75,11 +75,12 @@ export const NavBar = () => {
           <AppMenu />
         </UiPopOver>
 
-        {navactions.map((_action) => (
+        {navactions.map((_action, idx) => (
           <Tooltip label={_action.tootltiptitle} withArrow>
             <button
               className={`nav_action ${_action.name == "chat" ? "active" : ""}`}
               onClick={_action.onclickhandler}
+              key={_action.name + idx}
             >
               {_action.icon}
             </button>

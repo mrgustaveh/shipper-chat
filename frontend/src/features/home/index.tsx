@@ -6,9 +6,12 @@ import { MessagesList } from "./components/messages/MessagesList";
 import { ConversationHeader } from "./components/conversation/ConverssationHeader";
 import { ConversationMesssages } from "./components/conversation/ConversationMessages";
 import { MessageInput } from "./components/conversation/MessageInput";
+import { usePresence } from "@/hooks/websocket/usePresence";
 import "./index.scss";
 
 export default function Home() {
+  usePresence();
+
   return (
     <section id="home">
       <div id="left">

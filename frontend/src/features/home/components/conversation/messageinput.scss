@@ -32,6 +32,10 @@
       height: 2.25rem;
       color: colors.$bg_secondary;
       background-color: colors.$brand;
+
+      &:disabled {
+        opacity: 0.5;
+      }
     }
   }
 }
