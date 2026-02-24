@@ -12,16 +12,16 @@
     @include mixins.flexmixin(row, nowrap, center, flex-start, 0.5rem);
     cursor: pointer;
 
+    img {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+    }
+
     .uname_status {
       @include mixins.flexmixin(column, nowrap, flex-start, flex-start, 0);
       font-size: 0.875rem;
       font-weight: 500;
-
-      img {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 50%;
-      }
 
       span {
         font-size: 0.75rem;
@@ -41,6 +41,14 @@
       border: 1px solid colors.$divider;
     }
   }
+}
+
+.btn_close_chat {
+  @include mixins.flexmixin(row, nowrap, center, flex-start, 0.25rem);
+  width: 100%;
+  padding: 0 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 #contact_info {

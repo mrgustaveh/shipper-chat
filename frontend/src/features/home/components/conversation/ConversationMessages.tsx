@@ -29,7 +29,8 @@ export const ConversationMesssages = () => {
       {selectedChatId == "" && (
         <div className="no_messages no_channel_selected">
           <span>
-            Pick up the conversation or create <br /> a new one...
+            Pick up a conversation where you left <br />
+            or start a new one
           </span>
         </div>
       )}
