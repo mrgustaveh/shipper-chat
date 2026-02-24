@@ -27,7 +27,7 @@ export default function Splash() {
 
   const apiAuthCallBack = () => {
     notifications.show({
-      title: "Processing",
+      title: "Setting things up",
       message: "Please wait...",
       loading: false,
       radius: "lg",
