@@ -1,71 +1,40 @@
 import { Server, Socket } from "socket.io";
-import { createClerkClient } from "@clerk/clerk-sdk-node";
 import prisma from "../config/prisma";
 
-const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
-
 export const setupChatSockets = (io: Server) => {
-  io.use(async (socket, next) => {
-    const token = socket.handshake.query.token as string;
-    if (!token) return next(new Error("Authentication error: Missing token"));
-
-    try {
-      const sessionClaims = await clerk.verifyToken(token);
-
-      const user = await prisma.account.findUnique({
-        where: { clerkId: sessionClaims.sub },
-      });
-
-      if (!user) return next(new Error("User not found"));
-
-      (socket as any).user = user;
-      next();
-    } catch (err) {
-      console.error("Socket Auth Error:", err);
-      next(new Error("Authentication error"));
-    }
-  });
-
   io.on("connection", async (socket: Socket) => {
     const user = (socket as any).user;
     const { chatId } = socket.handshake.query as { chatId: string };
 
-    if (!chatId) {
-      socket.disconnect();
-      return;
+    let roomName: string | null = null;
+
+    if (chatId) {
+      roomName = `chat_${chatId}`;
+      let hasAccess = false;
+      try {
+        const chat = await prisma.userChat.findUnique({
+          where: { chatId },
+        });
+        hasAccess =
+          chat?.user1Id === user.accountId || chat?.user2Id === user.accountId;
+      } catch (error) {
+        console.error("Access verification error:", error);
+      }
+
+      if (hasAccess) {
+        socket.join(roomName);
+        console.log(`User ${user.username} joined room ${roomName}`);
+      } else {
+        console.log(
+          `Access denied for user ${user.username} to chat ${chatId}`,
+        );
+        socket.emit("error", { message: "Access denied to this chat" });
+        roomName = null;
+      }
     }
-
-    const roomName = `chat_${chatId}`;
-    let hasAccess = false;
-    try {
-      const chat = await prisma.userChat.findUnique({
-        where: { chatId },
-      });
-      hasAccess =
-        chat?.user1Id === user.accountId || chat?.user2Id === user.accountId;
-    } catch (error) {
-      console.error("Access verification error:", error);
-    }
-
-    if (!hasAccess) {
-      console.log(
-        `Access denied for user ${user.username} to room ${roomName}`,
-      );
-      socket.disconnect();
-      return;
-    }
-
-    socket.join(roomName);
-    console.log(`User ${user.username} joined room ${roomName}`);
-
-    io.to(roomName).emit("presence", {
-      type: "presence",
-      user_id: user.accountId,
-      username: user.username,
-      online: true,
-    });
 
     socket.on("chat_message", async (data) => {
+      if (!chatId || !roomName) return;
       const { text_content, media, links, docs } = data;
 
       const hasMedia = Array.isArray(media) && media.length > 0;
@@ -117,6 +86,7 @@ export const setupChatSockets = (io: Server) => {
     });
 
     socket.on("typing", (data) => {
+      if (!roomName) return;
       socket.to(roomName).emit("typing", {
         type: "typing",
         user_id: user.accountId,
@@ -126,13 +96,9 @@ export const setupChatSockets = (io: Server) => {
     });
 
     socket.on("disconnect", () => {
-      console.log(`User ${user.username} left room ${roomName}`);
-      io.to(roomName).emit("presence", {
-        type: "presence",
-        user_id: user.accountId,
-        username: user.username,
-        online: false,
-      });
+      if (roomName) {
+        console.log(`User ${user.username} left room ${roomName}`);
+      }
     });
   });
 };
