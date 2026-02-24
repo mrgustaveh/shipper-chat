@@ -134,6 +134,21 @@ const ContactInfo = ({ userInfo }: { userInfo: Account | undefined }) => {
     setControlsRefs(controlsRefs);
   };
 
+  const chatMessages = useChatStore((s) => s.chatMessages);
+
+  const media = useMemo(
+    () => chatMessages.flatMap((m) => m.media || []),
+    [chatMessages],
+  );
+  const links = useMemo(
+    () => chatMessages.flatMap((m) => m.links || []),
+    [chatMessages],
+  );
+  const docs = useMemo(
+    () => chatMessages.flatMap((m) => m.docs || []),
+    [chatMessages],
+  );
+
   return (
     <div id="contact_info">
       <div className="img_uname">
@@ -178,41 +193,89 @@ const ContactInfo = ({ userInfo }: { userInfo: Account | undefined }) => {
 
         <Tabs.Panel value="1">
           <div className="media_images">
-            <img src="/icon-bg.png" alt="media" loading="lazy" />
-            <img src="/icon-bg.png" alt="media" loading="lazy" />
-            <img src="/icon-bg.png" alt="media" loading="lazy" />
-            <img src="/icon-bg.png" alt="media" loading="lazy" />
-            <img src="/icon-bg.png" alt="media" loading="lazy" />
+            {media.length > 0 ? (
+              media.map((url, idx) => (
+                <img key={idx} src={url} alt="media" loading="lazy" />
+              ))
+            ) : (
+              <p
+                className="no_content"
+                style={{
+                  textAlign: "center",
+                  width: "100%",
+                  color: COLORS.text_secondary,
+                }}
+              >
+                No media yet
+              </p>
+            )}
           </div>
         </Tabs.Panel>
 
         <Tabs.Panel value="2">
           <div className="media_links_docs">
-            <a
-              href="https://mrgustaveh.github.io"
-              target="_blank"
-              referrerPolicy="no-referrer"
-            >
-              <span className="_icon_ctr">
-                <IoIosLink size={24} />
-              </span>
-              https://mrgustaveh...
-            </a>
+            {links.length > 0 ? (
+              links.map((url, idx) => (
+                <a
+                  key={idx}
+                  href={url}
+                  target="_blank"
+                  referrerPolicy="no-referrer"
+                >
+                  <span className="_icon_ctr">
+                    <IoIosLink size={24} />
+                  </span>
+                  {url.length > 25 ? url.substring(0, 25) + "..." : url}
+                </a>
+              ))
+            ) : (
+              <p
+                className="no_content"
+                style={{
+                  textAlign: "center",
+                  width: "100%",
+                  color: COLORS.text_secondary,
+                }}
+              >
+                No links yet
+              </p>
+            )}
           </div>
         </Tabs.Panel>
 
         <Tabs.Panel value="3">
           <div className="media_links_docs">
-            <a
-              href="https://mrgustaveh.github.io"
-              target="_blank"
-              referrerPolicy="no-referrer"
-            >
-              <span className="_icon_ctr">
-                <FaFile size={24} />
-              </span>
-              https://mrgustaveh...
-            </a>
+            {docs.length > 0 ? (
+              docs.map((url, idx) => (
+                <a
+                  key={idx}
+                  href={url}
+                  target="_blank"
+                  referrerPolicy="no-referrer"
+                >
+                  <span className="_icon_ctr">
+                    <FaFile size={24} />
+                  </span>
+                  {(() => {
+                    const name = url.split("/").pop() || "Document";
+                    return name.length > 20
+                      ? name.substring(0, 20) + "..."
+                      : name;
+                  })()}
+                </a>
+              ))
+            ) : (
+              <p
+                className="no_content"
+                style={{
+                  textAlign: "center",
+                  width: "100%",
+                  color: COLORS.text_secondary,
+                }}
+              >
+                No docs yet
+              </p>
+            )}
           </div>
         </Tabs.Panel>
       </Tabs>
