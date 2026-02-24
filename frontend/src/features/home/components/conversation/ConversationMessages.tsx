@@ -16,13 +16,14 @@ export const ConversationMesssages = () => {
   const ctrRef = useRef<HTMLDivElement>(null!);
 
   useEffect(() => {
-    if (
-      listChatMessagesQuery?.data &&
-      listChatMessagesQuery?.data?.length > 0
-    ) {
+    useChatStore.setState({ chatMessages: [] });
+  }, [selectedChatId]);
+
+  useEffect(() => {
+    if (listChatMessagesQuery?.data !== undefined) {
       useChatStore.setState({ chatMessages: listChatMessagesQuery?.data });
     }
-  }, [selectedChatId, listChatMessagesQuery?.data]);
+  }, [listChatMessagesQuery?.data]);
 
   useEffect(() => {
     ctrRef.current.scrollTop = ctrRef.current.scrollHeight;

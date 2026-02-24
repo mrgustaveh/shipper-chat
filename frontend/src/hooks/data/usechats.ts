@@ -19,7 +19,7 @@ export const useChats = (args: args) => {
   });
 
   const listChatMessagesQuery = useQuery({
-    queryKey: ["list-chat-messages"],
+    queryKey: ["list-chat-messages", args?.chatId],
     queryFn: async () => {
       const token = await session?.getToken();
       return listChatMessages({
