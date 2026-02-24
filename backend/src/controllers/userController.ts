@@ -24,7 +24,7 @@ export const userController = {
     res.json(user);
   },
 
-  createOrUpdateAccount: async (req: AuthenticatedRequest, res: Response) => {
+  createAccount: async (req: AuthenticatedRequest, res: Response) => {
     const { username, displayPic, email } = req.body;
     const clerkId = req.clerkId;
 
@@ -32,15 +32,36 @@ export const userController = {
       return res.status(401).json({ error: "clerkId not found in request" });
 
     try {
-      const account = await prisma.account.upsert({
+      let account = await prisma.account.findUnique({
         where: { clerkId },
-        update: {
-          username,
-          displayPic,
-          email,
-        },
-        create: {
-          clerkId,
+      });
+
+      if (!account) {
+        account = await prisma.account.create({
+          data: {
+            clerkId,
+            username,
+            displayPic,
+            email,
+          },
+        });
+      }
+
+      res.json(account);
+    } catch (error) {
+      console.error("Account sync error:", error);
+      res.status(500).json({ error: "Failed to sync account" });
+    }
+  },
+
+  updateAccount: async (req: AuthenticatedRequest, res: Response) => {
+    const { username, displayPic, email } = req.body;
+    const clerkId = req.clerkId;
+
+    try {
+      const account = await prisma.account.update({
+        where: { clerkId },
+        data: {
           username,
           displayPic,
           email,
@@ -49,8 +70,8 @@ export const userController = {
 
       res.json(account);
     } catch (error) {
-      console.error("Account upsert error:", error);
-      res.status(500).json({ error: "Failed to create or update account" });
+      console.error("Account update error:", error);
+      res.status(500).json({ error: "Failed to update account" });
     }
   },
 };

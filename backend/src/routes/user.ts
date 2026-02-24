@@ -6,7 +6,8 @@ const router = Router();
 
 router.use(clerkAuth);
 
-router.post("/", userController.createOrUpdateAccount);
+router.post("/", userController.createAccount);
+router.patch("/", requireAccount, userController.updateAccount);
 router.get("/me", requireAccount, userController.getProfile);
 router.get("/list", requireAccount, userController.listUsers);
 router.get("/:id", requireAccount, userController.retrieveUser);
