@@ -10,7 +10,6 @@
 
   .profile_uname {
     @include mixins.flexmixin(row, nowrap, center, flex-start, 0.5rem);
-    cursor: pointer;
 
     img {
       width: 2.5rem;

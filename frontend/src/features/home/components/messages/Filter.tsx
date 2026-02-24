@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FiSearch } from "react-icons/fi";
 import { CiFilter } from "react-icons/ci";
+import { useSearchStore } from "../../store/search";
 import { COLORS } from "@/lib/constants";
 import "./filter.scss";
 
@@ -23,14 +24,21 @@ export const SearchFilter = () => {
   });
 
   const onSearch = (args: schematype) => {
-    console.log(args);
+    useSearchStore.setState({ searchVaue: args.searchValue });
   };
 
   return (
     <div id="search_filter">
       <form id="search" onSubmit={handleSubmit(onSearch)}>
         <FiSearch size={18} color={COLORS.text_secondary} />
-        <input placeholder="Search in messages" {...register("searchValue")} />
+        <input
+          placeholder="Search in messages"
+          {...register("searchValue", {
+            onChange(ev) {
+              useSearchStore.setState({ searchVaue: ev.target.value });
+            },
+          })}
+        />
       </form>
 
       <button id="filter">

@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { RiCheckDoubleFill } from "react-icons/ri";
 import { useApiAuth } from "@/hooks/data/useapiauth";
 import { useChats } from "@/hooks/data/usechats";
 import { useChatStore } from "../../store/chat";
+import { useSearchStore } from "../../store/search";
 import { COLORS } from "@/lib/constants";
 import type { Account, Chat } from "@/lib/api/entities";
 import { dateDistanceToNow, shortenString } from "@/lib/utils";
@@ -10,10 +12,31 @@ import "./messageslist.scss";
 export const MessagesList = () => {
   const { getAccountQuery } = useApiAuth();
   const { listChatsQuery } = useChats({});
+  const searchvalue = useSearchStore((s) => s.searchVaue);
+
+  const chats = useMemo(() => {
+    return searchvalue == ""
+      ? listChatsQuery?.data
+      : listChatsQuery?.data?.filter(
+          (_chat) =>
+            _chat?.user1?.username
+              ?.toLowerCase()
+              ?.includes(searchvalue?.trim()?.toLowerCase()) ||
+            _chat?.user2?.username
+              ?.toLowerCase()
+              ?.includes(searchvalue?.trim()?.toLowerCase()) ||
+            _chat?.user1?.email
+              ?.toLowerCase()
+              ?.includes(searchvalue?.trim()?.toLowerCase()) ||
+            _chat?.user2?.email
+              ?.toLowerCase()
+              ?.includes(searchvalue?.trim()?.toLowerCase()),
+        );
+  }, [searchvalue, listChatsQuery?.data]);
 
   return (
     <div id="messages_list">
-      {listChatsQuery?.data?.map((_chat, idx) => (
+      {chats?.map((_chat, idx) => (
         <MessagePreview
           key={_chat?.chatId + idx}
           authUserId={getAccountQuery?.data?.accountId ?? ""}
