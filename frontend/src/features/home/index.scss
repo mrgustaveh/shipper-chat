@@ -7,13 +7,12 @@
   #left {
     width: 5rem;
     height: 100vh;
-    padding: 0.5rem 0;
+    padding: 0.75rem 0;
   }
 
   #right {
     width: calc(100vw - 5rem);
     height: 100vh;
-    padding: 0.5rem 1rem;
-    background-color: colors.$bg_secondary;
+    padding: 0.75rem 1rem;
   }
 }

@@ -1,0 +1,32 @@
+@use "../../../../styles/constants/colors" as colors;
+@use "../../../../styles/constants/mixins" as mixins;
+
+#search {
+  @include mixins.flexmixin(row, nowrap, center, space-between, 0);
+  padding: 0.25rem;
+  border-radius: 0.75rem;
+  border: 1px solid colors.$divider;
+
+  .input_ctr {
+    @include mixins.flexmixin(row, nowrap, center, flex-start, 0.25rem);
+    width: 90%;
+
+    input {
+      font-size: 0.875rem;
+      font-weight: 400;
+    }
+
+    .icon_search {
+      color: colors.$text_secondary;
+    }
+  }
+
+  .command {
+    @include mixins.flexmixin(row, nowrap, center, center, 0.25rem);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    background-color: colors.$divider;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+}

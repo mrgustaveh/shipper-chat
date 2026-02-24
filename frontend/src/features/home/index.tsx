@@ -1,9 +1,5 @@
+import { ChatHeader } from "./components/chatheader/ChatHeader";
 import { NavBar } from "./components/navigation/Nav";
-// import { SearchBar } from "./components/search";
-// import { Channels } from "./components/channels";
-// import { Account } from "./components/account";
-// import { Messsages } from "./components/conversation/Messages";
-// import { ChatInput } from "./components/conversation/ChatInput";
 import "./index.scss";
 
 export default function Home() {
@@ -14,7 +10,7 @@ export default function Home() {
       </div>
 
       <div id="right">
-        <p>right</p>
+        <ChatHeader />
       </div>
     </section>
   );

@@ -67,7 +67,10 @@ export const NavBar = () => {
 
         {navactions.map((_action) => (
           <Tooltip label={_action.tootltiptitle} withArrow>
-            <button className="nav_action" onClick={_action.onclickhandler}>
+            <button
+              className={`nav_action ${_action.name == "chat" ? "active" : ""}`}
+              onClick={_action.onclickhandler}
+            >
               {_action.icon}
             </button>
           </Tooltip>

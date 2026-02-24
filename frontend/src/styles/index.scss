@@ -39,6 +39,11 @@ button {
   cursor: pointer;
 }
 
+img {
+  object-fit: contain;
+  object-position: center;
+}
+
 ::-webkit-scrollbar {
   display: none !important;
 }
