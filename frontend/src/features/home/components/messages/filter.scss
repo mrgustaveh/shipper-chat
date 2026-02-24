@@ -1,0 +1,29 @@
+@use "../../../../styles/constants/colors" as colors;
+@use "../../../../styles/constants/mixins" as mixins;
+
+#search_filter {
+  @include mixins.flexmixin(row, nowrap, center, space-between, 0);
+  margin-top: 1.5rem;
+
+  #search {
+    @include mixins.flexmixin(row, nowrap, center, flex-start, 0.25rem);
+    width: calc(100% - 3rem);
+    height: 2.5rem;
+    padding-left: 0.5rem;
+    border-radius: 0.625rem;
+
+    input {
+      width: 100%;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+  }
+
+  #filter {
+    @include mixins.flexmixin(row, nowrap, center, center, 0);
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.625rem;
+    border: 1px solid colors.$divider;
+  }
+}

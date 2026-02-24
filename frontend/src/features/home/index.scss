@@ -14,5 +14,27 @@
     width: calc(100vw - 5rem);
     height: 100vh;
     padding: 0.75rem 1rem;
+
+    #lower {
+      @include mixins.flexmixin(row, nowrap, flex-start, space-between, 0);
+      margin-top: 0.75rem;
+      height: calc(100vh - 6rem);
+
+      #messages {
+        width: 25rem;
+        height: 100%;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        background-color: colors.$bg_secondary;
+      }
+
+      #chat_container {
+        width: calc(100vw - 33rem);
+        height: 100%;
+        padding: 0.75rem;
+        border-radius: 1rem;
+        background-color: colors.$bg_secondary;
+      }
+    }
   }
 }

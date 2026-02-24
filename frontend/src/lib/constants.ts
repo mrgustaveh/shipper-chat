@@ -10,4 +10,5 @@ export const COLORS = {
   danger: "#f1515f",
   secondary: "#5b41ff",
   secondary_alt: "#2d2a28",
+  brand: "#1E9A80",
 };
