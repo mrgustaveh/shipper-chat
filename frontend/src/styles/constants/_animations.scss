@@ -1,0 +1,19 @@
+@mixin usesimpleanimation($duration, $delay) {
+  animation: simpleanimation;
+  animation-duration: $duration;
+  animation-delay: $delay;
+  animation-direction: alternate;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in;
+
+  @keyframes simpleanimation {
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    from {
+      transform: translateY(0.5rem);
+      opacity: 0;
+    }
+  }
+}

@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Elms+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 
 @mixin usebasefont() {
-  font-family: "Elms Sans", sans-serif;
+  font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
   font-weight: 300;
   font-style: normal;
@@ -14,26 +14,6 @@
   align-items: $align;
   justify-content: $justify;
   gap: $gap;
-}
-
-@mixin usesimpleanimation($duration, $delay) {
-  animation: simpleanimation;
-  animation-duration: $duration;
-  animation-delay: $delay;
-  animation-direction: alternate;
-  animation-fill-mode: both;
-  animation-timing-function: ease-in;
-
-  @keyframes simpleanimation {
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    from {
-      transform: translateY(0.5rem);
-      opacity: 0;
-    }
-  }
 }
 
 @mixin phone-only {
