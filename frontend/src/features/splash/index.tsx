@@ -31,7 +31,6 @@ export default function Splash() {
       message: "Please wait...",
       loading: false,
       radius: "lg",
-      id: "get-create-account",
     });
 
     const assigned_username = `${user?.fullName?.substring(0, 4)?.toLowerCase()}${Math.floor(Math.random() * 10000)}`;

@@ -1,66 +1,71 @@
 import { RiCheckDoubleFill } from "react-icons/ri";
-// import { IoChatbubbleOutline } from "react-icons/io5";
-// import { BsArchive, BsVolumeMute } from "react-icons/bs";
-// import { PiUserCircle } from "react-icons/pi";
-// import { TfiExport } from "react-icons/tfi";
-// import { GoTrash } from "react-icons/go";
-// import { RxCross2 } from "react-icons/rx";
-// import { UiPopOver } from "@/components/ui/UiPopOver";
+import { useApiAuth } from "@/hooks/data/useapiauth";
+import { useChats } from "@/hooks/data/usechats";
+import { useChatStore } from "../../store/chat";
 import { COLORS } from "@/lib/constants";
+import type { Account, Chat } from "@/lib/api/entities";
+import { dateDistanceToNow, shortenString } from "@/lib/utils";
 import "./messageslist.scss";
 
 export const MessagesList = () => {
+  const { getAccountQuery } = useApiAuth();
+  const { listChatsQuery } = useChats({});
+
   return (
     <div id="messages_list">
-      <MessagePreview />
-      <MessagePreview />
-      <MessagePreview />
+      {listChatsQuery?.data?.map((_chat, idx) => (
+        <MessagePreview
+          key={_chat?.chatId + idx}
+          authUserId={getAccountQuery?.data?.accountId ?? ""}
+          {..._chat}
+        />
+      ))}
     </div>
   );
 };
 
-const MessagePreview = () => {
+type messageProps = { authUserId: string } & Chat;
+
+const MessagePreview = ({
+  authUserId,
+  chatId,
+  user1,
+  user2,
+  created,
+  messages,
+}: messageProps) => {
+  const selectedchatid = useChatStore((s) => s.selectedChatId);
+  const renderuser: Account = authUserId == user1?.accountId ? user2 : user1;
+
   return (
-    <button id="message_preview">
-      <img src="/icon-bg.png" alt="profile picture" loading="lazy" />
+    <button
+      id="message_preview"
+      className={selectedchatid == chatId ? "selected_chat" : ""}
+      onClick={() => useChatStore.setState({ selectedChatId: chatId })}
+    >
+      <img
+        src={renderuser?.displayPic ?? "/icon-bg.png"}
+        alt="profile picture"
+        loading="lazy"
+      />
 
       <div className="_msg_details">
         <p>
-          Adrian Kurt
-          <span>12 min ago</span>
+          {renderuser?.username}
+          <span>
+            {dateDistanceToNow(messages?.at(-1)?.created ?? created ?? "")}
+          </span>
         </p>
 
         <p>
-          <span>Thanks for the explanation!</span>
+          <span>
+            {messages?.at(-1)?.textContent
+              ? shortenString(messages?.at(-1)?.textContent ?? "")
+              : "Start the conversation"}
+          </span>
           <RiCheckDoubleFill size={16} color={COLORS.success} />
         </p>
       </div>
     </button>
-
-    // <div id="menu_dropdown">
-    //   <button>
-    //     <IoChatbubbleOutline size={18} /> Mark as unread
-    //   </button>
-    //   <button>
-    //     <BsArchive size={18} /> Archive
-    //   </button>
-    //   <button>
-    //     <BsVolumeMute size={18} /> Mute
-    //   </button>
-    //   <button>
-    //     <PiUserCircle size={18} /> Contact info
-    //   </button>
-    //   <button>
-    //     <TfiExport size={18} />
-    //     Export chat
-    //   </button>
-    //   <button>
-    //     <RxCross2 size={18} />
-    //     Clear chat
-    //   </button>
-    //   <button className="delete">
-    //     <GoTrash size={18} /> Delete chat
-    //   </button>
-    // </div>
   );
 };

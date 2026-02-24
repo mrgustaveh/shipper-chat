@@ -47,6 +47,22 @@
 
     .user_picker {
       @include mixins.flexmixin(row, nowrap, center, flex-start, 0.5rem);
+      width: 100%;
+      padding: 0.25rem;
+      border-radius: 0.375rem;
+      transition: all ease-in-out 0.25s;
+
+      &:hover {
+        background-color: colors.$divider;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+
+        &:hover {
+          background: transparent;
+        }
+      }
 
       img {
         width: 2rem;
