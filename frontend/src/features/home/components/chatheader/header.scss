@@ -17,6 +17,12 @@
   .search_actions {
     @include mixins.flexmixin(row, nowrap, center, flex-end, 0.75rem);
 
+    .no_notifications {
+      font-size: 0.875rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
     .header_action {
       width: 2rem;
       height: 2rem;

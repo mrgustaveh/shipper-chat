@@ -1,0 +1,78 @@
+@use "../../../../styles/constants/colors" as colors;
+@use "../../../../styles/constants/mixins" as mixins;
+
+#app_menu {
+  padding: 0 0.5rem;
+
+  .menu_action {
+    @include mixins.flexmixin(row, nowrap, center, flex-start, 0.5rem);
+    width: 100%;
+    padding: 0.25rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: colors.$bg_secondary;
+
+    .icon_ctr {
+      @include mixins.flexmixin(row, nowrap, center, center, 0);
+      width: 1.875rem;
+      height: 1.875rem;
+      border-radius: 0.375rem;
+      background-color: colors.$divider;
+    }
+  }
+
+  .rename {
+    margin-top: 0.25rem;
+    background-color: colors.$bg_tertiary;
+
+    .icon_ctr {
+      background-color: colors.$bg_secondary;
+    }
+  }
+
+  span {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: colors.$text_secondary;
+  }
+
+  .account_info {
+    @include mixins.flexmixin(column, nowrap, flex-start, flex-start, 0);
+
+    .u_name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: colors.$text_primary;
+    }
+  }
+
+  .credits {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: colors.$bg_tertiary;
+
+    .credits_count {
+      @include mixins.flexmixin(row, nowrap, center, space-between, 0);
+
+      .title_count {
+        @include mixins.flexmixin(column, nowrap, flex-start, flex-start, 0);
+
+        .title {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: colors.$text_primary;
+        }
+
+        &.align_end {
+          align-items: flex-end;
+        }
+      }
+    }
+
+    .used {
+      @include mixins.flexmixin(row, nowrap, center, space-between, 0);
+    }
+  }
+}

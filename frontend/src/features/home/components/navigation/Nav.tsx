@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { Tooltip } from "@mantine/core";
 import { RiHome2Line } from "react-icons/ri";
 import { IoChatbubbleOutline, IoFolderOutline } from "react-icons/io5";
@@ -6,6 +6,8 @@ import { MdOutlineExplore } from "react-icons/md";
 import { LuImage } from "react-icons/lu";
 import { useApiAuth } from "@/hooks/data/useapiauth";
 import { PiStarFour } from "react-icons/pi";
+import { UiPopOver } from "@/components/ui/UiPopOver";
+import { AppMenu } from "./AppMenu";
 import "./nav.scss";
 
 type navaction = {
@@ -54,16 +56,24 @@ export const NavBar = () => {
   return (
     <nav id="left_nav">
       <div className="top">
-        <Tooltip label="Menu" withArrow>
-          <button className="app_menu">
-            <img
-              src="/icon-bg.png"
-              alt="icon"
-              className="icon"
-              loading="lazy"
-            />
-          </button>
-        </Tooltip>
+        <UiPopOver
+          target={
+            <button className="app_menu">
+              <img
+                src="/icon-bg.png"
+                alt="icon"
+                className="icon"
+                loading="lazy"
+              />
+            </button>
+          }
+          options={{
+            width: 300,
+            trapFocus: true,
+          }}
+        >
+          <AppMenu />
+        </UiPopOver>
 
         {navactions.map((_action) => (
           <Tooltip label={_action.tootltiptitle} withArrow>

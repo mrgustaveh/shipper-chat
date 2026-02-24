@@ -37,6 +37,10 @@ button {
   outline-color: transparent;
   background-color: transparent;
   cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 img {

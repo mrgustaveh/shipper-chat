@@ -11,7 +11,7 @@ export const UiPopOver = ({ target, children, options }: props) => {
     <Popover zIndex={10000} {...options}>
       <Popover.Target>{target}</Popover.Target>
 
-      <Popover.Dropdown style={{ borderRadius: "1rem" }}>
+      <Popover.Dropdown style={{ padding: "0.625rem 0", borderRadius: "1rem" }}>
         {children}
       </Popover.Dropdown>
     </Popover>
