@@ -44,6 +44,7 @@ export const MessageInput = () => {
         placeholder="Type any message..."
         autoComplete="off"
         autoCapitalize="off"
+        disabled={selectedchatid == ""}
         onKeyUp={() => sendTyping(true)}
         {...form.register("message")}
       />
