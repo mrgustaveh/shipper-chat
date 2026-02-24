@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { chatController } from "../controllers/chatController";
-import { clerkAuth } from "../middleware/auth";
+import { clerkAuth, requireAccount } from "../middleware/auth";
 
 const router = Router();
 
 router.use(clerkAuth);
+router.use(requireAccount);
 
 router.get("/user-chats", chatController.listUserChats);
 router.post("/user-chats", chatController.createUserChat);

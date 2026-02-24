@@ -1,7 +1,7 @@
 import { Response } from "express";
-import { AuthenticatedRequest } from "../middleware/auth";
-import prisma from "../config/prisma";
 import { createClerkClient } from "@clerk/clerk-sdk-node";
+import prisma from "../config/prisma";
+import { AuthenticatedRequest } from "../middleware/auth";
 
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
@@ -26,14 +26,12 @@ export const userController = {
 
   createOrUpdateAccount: async (req: AuthenticatedRequest, res: Response) => {
     const { username, displayPic, email } = req.body;
-    const token = req.headers.authorization?.split(" ")[1];
+    const clerkId = req.clerkId;
 
-    if (!token) return res.status(401).json({ error: "Unauthorized" });
+    if (!clerkId)
+      return res.status(401).json({ error: "clerkId not found in request" });
 
     try {
-      const sessionClaims = await clerk.verifyToken(token);
-      const clerkId = sessionClaims.sub;
-
       const account = await prisma.account.upsert({
         where: { clerkId },
         update: {
@@ -51,7 +49,8 @@ export const userController = {
 
       res.json(account);
     } catch (error) {
-      res.status(401).json({ error: "invalid token" });
+      console.error("Account upsert error:", error);
+      res.status(500).json({ error: "Failed to create or update account" });
     }
   },
 };
