@@ -3,41 +3,41 @@
 
 #messages_list {
   margin-top: 1rem;
-}
 
-#message_preview {
-  @include mixins.flexmixin(row, nowrap, center, flex-start, 0.5rem);
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 0.75rem;
-  transition: all ease-in-out 0.25s;
+  #message_preview {
+    @include mixins.flexmixin(row, nowrap, center, flex-start, 0.5rem);
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    transition: all ease-in-out 0.25s;
 
-  img {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-  }
+    img {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+    }
 
-  ._msg_details {
-    width: calc(100% - 3rem);
+    ._msg_details {
+      width: calc(100% - 3rem);
 
-    p {
-      @include mixins.flexmixin(row, nowrap, center, space-between, 0);
-      font-size: 0.875rem;
-      font-weight: 500;
+      p {
+        @include mixins.flexmixin(row, nowrap, center, space-between, 0);
+        font-size: 0.875rem;
+        font-weight: 500;
 
-      span {
-        font-size: 0.75rem;
-        color: colors.$text_secondary;
+        span {
+          font-size: 0.75rem;
+          color: colors.$text_secondary;
+        }
       }
     }
-  }
 
-  &:hover {
-    background-color: colors.$bg_tertiary;
-  }
+    &:hover {
+      background-color: colors.$bg_tertiary;
+    }
 
-  &.selected_chat {
-    background-color: colors.$bg_tertiary;
+    &.selected_chat {
+      background-color: colors.$bg_tertiary;
+    }
   }
 }

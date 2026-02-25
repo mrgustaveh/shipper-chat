@@ -1,6 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useSession } from "@clerk/clerk-react";
-import { listChats, createChat, listChatMessages } from "@/lib/api/chat";
+import {
+  listChats,
+  createChat,
+  listChatMessages,
+  uploadMedia,
+} from "@/lib/api/chat";
 
 type args = {
   chatId?: string;
@@ -39,5 +44,17 @@ export const useChats = (args: args) => {
     },
   });
 
-  return { listChatsQuery, listChatMessagesQuery, createChatMutation };
+  const uploadMediaMutation = useMutation({
+    mutationFn: async (args: { file: File }) => {
+      const token = await session?.getToken();
+      return uploadMedia({ ...args, token: token ?? "" });
+    },
+  });
+
+  return {
+    listChatsQuery,
+    listChatMessagesQuery,
+    createChatMutation,
+    uploadMediaMutation,
+  };
 };

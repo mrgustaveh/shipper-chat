@@ -1,13 +1,16 @@
+import { useRef } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Tooltip } from "@mantine/core";
+import { Tooltip, Loader } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 import { IoMicOutline } from "react-icons/io5";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
 import { TbSend } from "react-icons/tb";
 import { useRealTimeChat } from "@/hooks/websocket/usertchat";
 import { useChatStore } from "../../store/chat";
+import { useChats } from "@/hooks/data/usechats";
 import { UiPopOver } from "@/components/ui/UiPopOver";
 import "./messageinput.scss";
 
@@ -20,10 +23,13 @@ type schematype = z.infer<typeof schema>;
 
 export const MessageInput = () => {
   const selectedchatid = useChatStore((s) => s.selectedChatId);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { sendMessage, sendTyping } = useRealTimeChat({
     chatId: selectedchatid,
   });
+
+  const { uploadMediaMutation } = useChats({ chatId: selectedchatid });
 
   const form = useForm<schematype>({
     resolver: zodResolver(schema),
@@ -34,8 +40,33 @@ export const MessageInput = () => {
   const MEDIA_URL = form.watch("mediaUrl");
 
   const onSendMessage = (args: schematype) => {
-    sendMessage(args.message!);
+    const text = args.message || "";
+    const mediaURLs = args.mediaUrl ? [args.mediaUrl] : [];
+
+    sendMessage(text, mediaURLs);
     form.reset();
+  };
+
+  const onFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const res = await uploadMediaMutation.mutateAsync({ file });
+      form.setValue("mediaUrl", res.url);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      notifications.show({
+        title: "Upload failed",
+        message: "We couldn't save your upload, try again",
+        color: "orange",
+        radius: "lg",
+      });
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   return (
@@ -78,16 +109,35 @@ export const MessageInput = () => {
         </UiPopOver>
 
         <Tooltip label="Send a image or file" withArrow>
-          <button disabled={selectedchatid == ""}>
-            <GrAttachment size={18} />
+          <button
+            type="button"
+            disabled={selectedchatid == "" || uploadMediaMutation.isPending}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {uploadMediaMutation.isPending ? (
+              <Loader size={12} color="gray" />
+            ) : (
+              <GrAttachment size={18} />
+            )}
           </button>
         </Tooltip>
+
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={onFileSelected}
+        />
 
         <Tooltip label="Send (Enter)" withArrow>
           <button
             type="submit"
             className="send_message"
-            disabled={selectedchatid == "" || MESSAGE == "" || MEDIA_URL == ""}
+            disabled={
+              selectedchatid == "" ||
+              (!MESSAGE?.trim() && !MEDIA_URL) ||
+              uploadMediaMutation.isPending
+            }
           >
             <TbSend size={20} />
           </button>

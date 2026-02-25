@@ -1,9 +1,11 @@
 import { useMemo } from "react";
 import { RiCheckDoubleFill } from "react-icons/ri";
+import { useDisclosure } from "@mantine/hooks";
 import { useApiAuth } from "@/hooks/data/useapiauth";
 import { useChats } from "@/hooks/data/usechats";
 import { useChatStore } from "../../store/chat";
 import { useSearchStore } from "../../store/search";
+import { UiPopOver } from "@/components/ui/UiPopOver";
 import { COLORS } from "@/lib/constants";
 import type { Account, Chat } from "@/lib/api/entities";
 import { dateDistanceToNow, shortenString } from "@/lib/utils";
@@ -57,38 +59,54 @@ const MessagePreview = ({
   created,
   messages,
 }: messageProps) => {
+  const [opened, { open, close }] = useDisclosure();
   const selectedchatid = useChatStore((s) => s.selectedChatId);
   const renderuser: Account = authUserId == user1?.accountId ? user2 : user1;
 
   return (
-    <button
-      id="message_preview"
-      className={selectedchatid == chatId ? "selected_chat" : ""}
-      onClick={() => useChatStore.setState({ selectedChatId: chatId })}
+    <UiPopOver
+      target={
+        <button
+          id="message_preview"
+          className={selectedchatid == chatId ? "selected_chat" : ""}
+          onClick={() => useChatStore.setState({ selectedChatId: chatId })}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            open();
+          }}
+        >
+          <img
+            src={renderuser?.displayPic ?? "/icon-bg.png"}
+            alt="profile picture"
+            loading="lazy"
+          />
+
+          <div className="_msg_details">
+            <p>
+              {renderuser?.username}
+              <span>
+                {dateDistanceToNow(messages?.at(-1)?.created ?? created ?? "")}
+              </span>
+            </p>
+
+            <p>
+              <span>
+                {messages?.at(-1)?.textContent
+                  ? shortenString(messages?.at(-1)?.textContent ?? "")
+                  : "Start the conversation"}
+              </span>
+              <RiCheckDoubleFill size={16} color={COLORS.success} />
+            </p>
+          </div>
+        </button>
+      }
+      options={{
+        width: 300,
+        opened: opened,
+        onChange: close,
+      }}
     >
-      <img
-        src={renderuser?.displayPic ?? "/icon-bg.png"}
-        alt="profile picture"
-        loading="lazy"
-      />
-
-      <div className="_msg_details">
-        <p>
-          {renderuser?.username}
-          <span>
-            {dateDistanceToNow(messages?.at(-1)?.created ?? created ?? "")}
-          </span>
-        </p>
-
-        <p>
-          <span>
-            {messages?.at(-1)?.textContent
-              ? shortenString(messages?.at(-1)?.textContent ?? "")
-              : "Start the conversation"}
-          </span>
-          <RiCheckDoubleFill size={16} color={COLORS.success} />
-        </p>
-      </div>
-    </button>
+      <p>message preview context menu</p>
+    </UiPopOver>
   );
 };
