@@ -82,11 +82,11 @@
       }
 
       .stop_btn {
-        background-color: rgba(colors.$brand, 0.1);
+        background-color: rgba($color: colors.$brand, $alpha: 0.1);
       }
 
       .cancel_btn {
-        background-color: rgba(red, 0.1);
+        background-color: rgba($color: colors.$danger, $alpha: 0.1);
       }
     }
   }
