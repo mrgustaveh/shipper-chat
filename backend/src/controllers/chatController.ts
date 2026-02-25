@@ -190,4 +190,28 @@ export const chatController = {
 
     res.json(updatedChat);
   },
+
+  deleteUserChat: async (req: AuthenticatedRequest, res: Response) => {
+    const account = req.user;
+    const { chatId } = req.params;
+
+    const chat = await prisma.userChat.findUnique({ where: { chatId } });
+
+    if (!chat) {
+      return res.status(404).json({ error: "Chat not found" });
+    }
+
+    if (
+      chat.user1Id !== account.accountId &&
+      chat.user2Id !== account.accountId
+    ) {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+
+    await prisma.userChat.delete({
+      where: { chatId },
+    });
+
+    res.status(204).send();
+  },
 };
