@@ -1,9 +1,9 @@
 FROM node:20-slim AS builder
 
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y openssl curl && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://get.pnpm.io/install.sh | sh -
-ENV PATH="/root/.local/share/pnpm:$PATH"
+RUN npm install -g pnpm
 
 WORKDIR /app
 
