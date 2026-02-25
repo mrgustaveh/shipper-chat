@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
+import { HoverCard } from "@mantine/core";
 import { TbMessage } from "react-icons/tb";
+import { FaFile } from "react-icons/fa6";
 import { useChatStore } from "../../store/chat";
 import { useApiAuth } from "@/hooks/data/useapiauth";
 import { useChats } from "@/hooks/data/usechats";
 import type { Message } from "@/lib/api/entities";
-import { dateDistanceToNow } from "@/lib/utils";
+import { dateDistanceToNow, shortenString } from "@/lib/utils";
 import "./conversationmessages.scss";
 
 export const ConversationMesssages = () => {
@@ -69,6 +71,8 @@ const ChatMessage = ({
   created,
   sender,
   textContent,
+  media = [],
+  docs = [],
   currentUserId,
 }: messageprops) => {
   return (
@@ -77,7 +81,50 @@ const ChatMessage = ({
     >
       <div className="chat_message">
         <div className="_message_timer">
-          <span className="_message">{textContent}</span>
+          {media.length > 0 && (
+            <div className="_message_media">
+              {media.map((url, i) => (
+                <img key={i} src={url} alt="Shared media" />
+              ))}
+            </div>
+          )}
+          {docs.length > 0 && (
+            <div className="_message_docs">
+              {docs.map((url, i) => (
+                <a key={i} href={url} target="_blank" rel="noreferrer">
+                  <FaFile /> View Document
+                </a>
+              ))}
+            </div>
+          )}
+          {textContent && (
+            <span className="_message">
+              {textContent.split(/(https?:\/\/[^\s]+)/g).map((part, i) => {
+                if (part.match(/^https?:\/\/[^\s]+$/)) {
+                  return (
+                    <HoverCard
+                      radius="lg"
+                      shadow="md"
+                      withArrow
+                      styles={{ dropdown: { padding: "0.25rem" } }}
+                    >
+                      <HoverCard.Target>
+                        <a key={i} href={part} target="_blank" rel="noreferrer">
+                          {shortenString(part, { leading: 10 })}
+                        </a>
+                      </HoverCard.Target>
+                      <HoverCard.Dropdown>
+                        <span style={{ fontSize: "0.75rem", fontWeight: 500 }}>
+                          {part}
+                        </span>
+                      </HoverCard.Dropdown>
+                    </HoverCard>
+                  );
+                }
+                return part;
+              })}
+            </span>
+          )}
           <span className="_timer">{dateDistanceToNow(created)}</span>
         </div>
       </div>

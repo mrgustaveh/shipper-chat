@@ -18,14 +18,60 @@
       max-width: 60%;
 
       ._message_timer {
-        @include mixins.flexmixin(column, nowrap, flex-start, flex-start, 0);
+        @include mixins.flexmixin(
+          column,
+          nowrap,
+          flex-start,
+          flex-start,
+          0.25rem
+        );
+
+        ._message_media {
+          img {
+            max-width: 100%;
+            max-height: 250px;
+            border-radius: 0.5rem;
+            object-fit: contain;
+          }
+        }
+
+        ._message_docs {
+          @include mixins.flexmixin(
+            column,
+            nowrap,
+            flex-start,
+            flex-start,
+            0.125rem
+          );
+
+          a {
+            color: colors.$text_primary;
+            font-size: 0.8125rem;
+            text-decoration: underline;
+            word-break: break-all;
+          }
+        }
 
         ._message {
+          display: inline-block;
           padding: 0.35rem 0.625rem;
           border-radius: 0.875rem;
           font-size: 0.875rem;
           font-weight: 500;
           background-color: colors.$bg_secondary;
+          overflow-wrap: break-word;
+          line-height: 1.5;
+          max-width: 100%;
+
+          a,
+          .mantine-HoverCard-target {
+            display: inline !important;
+            color: colors.$secondary;
+            text-decoration: underline;
+            word-break: break-all;
+            margin: 0;
+            cursor: pointer;
+          }
         }
 
         ._timer {

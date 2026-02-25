@@ -123,6 +123,7 @@
       color: colors.$text_primary;
       font-size: 0.875rem;
       font-weight: 500;
+      margin-bottom: 0.5rem;
 
       span {
         @include mixins.flexmixin(row, nowrap, center, center, 0);
