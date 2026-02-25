@@ -35,13 +35,13 @@ export const setupChatSockets = (io: Server) => {
 
     socket.on("chat_message", async (data) => {
       if (!chatId || !roomName) return;
-      const { text_content, media, links, docs } = data;
+      const { text_content, media, links, docs, voiceUrl } = data;
 
       const hasMedia = Array.isArray(media) && media.length > 0;
       const hasLinks = Array.isArray(links) && links.length > 0;
       const hasDocs = Array.isArray(docs) && docs.length > 0;
 
-      if (!text_content && !hasMedia && !hasLinks && !hasDocs) {
+      if (!text_content && !hasMedia && !hasLinks && !hasDocs && !voiceUrl) {
         socket.emit("error", { message: "Message content is required" });
         return;
       }
@@ -54,6 +54,7 @@ export const setupChatSockets = (io: Server) => {
             media: hasMedia ? media : [],
             links: hasLinks ? links : [],
             docs: hasDocs ? docs : [],
+            voiceUrl: voiceUrl || null,
             userChatId: chatId,
           },
         });
@@ -72,6 +73,7 @@ export const setupChatSockets = (io: Server) => {
           media: message.media,
           links: message.links,
           docs: message.docs,
+          voice_url: message.voiceUrl,
           created: message.created.toISOString(),
         });
 

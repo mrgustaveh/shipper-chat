@@ -26,6 +26,10 @@ const storage = new CloudinaryStorage({
         "doc",
         "mp4",
         "mov",
+        "mp3",
+        "wav",
+        "webm",
+        "ogg",
       ],
       resource_type: "auto",
     };

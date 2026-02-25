@@ -51,6 +51,7 @@ model Message {
   media       String[] @default([])
   links       String[] @default([])
   docs        String[] @default([])
+  voiceUrl    String?  @map("voice_url")
   userChatId String?  @map("user_chat_id") @db.Uuid
   created    DateTime @default(now())
 
