@@ -107,6 +107,7 @@ const ChatMessage = ({
                       shadow="md"
                       withArrow
                       styles={{ dropdown: { padding: "0.25rem" } }}
+                      key={i}
                     >
                       <HoverCard.Target>
                         <a key={i} href={part} target="_blank" rel="noreferrer">

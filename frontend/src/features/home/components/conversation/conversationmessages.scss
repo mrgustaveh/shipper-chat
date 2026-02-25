@@ -46,9 +46,11 @@
 
           a {
             color: colors.$text_primary;
-            font-size: 0.8125rem;
+            font-size: 0.875rem;
+            font-weight: 500;
             text-decoration: underline;
             word-break: break-all;
+            color: colors.$secondary;
           }
         }
 
