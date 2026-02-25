@@ -34,10 +34,12 @@ services:
   - type: redis
     name: shipper-redis
     plan: free
+    region: ohio
     ipAllowList: []
 
 databases:
   - name: shipper-db
     plan: free
+    region: ohio
     databaseName: shipper_chat
     user: mrgustaveh
