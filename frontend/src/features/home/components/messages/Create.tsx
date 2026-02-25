@@ -78,13 +78,14 @@ const NewMessage = ({ closePopover }: { closePopover: () => void }) => {
           user2Id: userId,
         })
         .then((res) => {
-          closePopover();
           useChatStore.setState({ selectedChatId: res?.chatId });
+          listChatsQuery.refetch();
           notifications.show({
             title: `Chat with ${username}`,
             message: "Start the conversation",
             radius: "lg",
           });
+          closePopover();
         })
         .catch(() => {
           notifications.show({
