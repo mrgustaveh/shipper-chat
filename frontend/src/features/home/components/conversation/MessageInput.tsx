@@ -69,7 +69,7 @@ export const MessageInput = () => {
     } catch (err) {
       notifications.show({
         title: "Upload failed",
-        message: "We couldn't save your upload, try again",
+        message: "We couldn't save your file, try again",
         color: "orange",
         radius: "lg",
       });
@@ -119,7 +119,7 @@ export const MessageInput = () => {
           />
         </UiPopOver>
 
-        <Tooltip label="Send a image or file" withArrow>
+        <Tooltip label="Send an image or file" withArrow>
           <button
             type="button"
             disabled={selectedchatid == "" || uploadMediaMutation.isPending}
@@ -137,6 +137,7 @@ export const MessageInput = () => {
           type="file"
           ref={fileInputRef}
           style={{ display: "none" }}
+          accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx"
           onChange={onFileSelected}
         />
 
