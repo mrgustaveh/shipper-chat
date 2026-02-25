@@ -16,7 +16,8 @@ import "./messageinput.scss";
 
 const schema = z.object({
   message: z.string().optional(),
-  mediaUrl: z.url().optional(),
+  mediaUrl: z.string().url().optional().or(z.literal("")),
+  mediaType: z.enum(["image", "doc"]).optional(),
 });
 
 type schematype = z.infer<typeof schema>;
@@ -41,9 +42,15 @@ export const MessageInput = () => {
 
   const onSendMessage = (args: schematype) => {
     const text = args.message || "";
-    const mediaURLs = args.mediaUrl ? [args.mediaUrl] : [];
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const links = text.match(urlRegex) || [];
 
-    sendMessage(text, mediaURLs);
+    const media =
+      args.mediaUrl && args.mediaType === "image" ? [args.mediaUrl] : [];
+    const docs =
+      args.mediaUrl && args.mediaType === "doc" ? [args.mediaUrl] : [];
+
+    sendMessage(text, media, links, docs);
     form.reset();
   };
 
@@ -54,6 +61,10 @@ export const MessageInput = () => {
     try {
       const res = await uploadMediaMutation.mutateAsync({ file });
       form.setValue("mediaUrl", res.url);
+      form.setValue(
+        "mediaType",
+        file.type.startsWith("image/") ? "image" : "doc",
+      );
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       notifications.show({
