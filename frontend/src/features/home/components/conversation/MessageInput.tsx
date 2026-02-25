@@ -8,6 +8,7 @@ import { GrAttachment } from "react-icons/gr";
 import { TbSend } from "react-icons/tb";
 import { useRealTimeChat } from "@/hooks/websocket/usertchat";
 import { useChatStore } from "../../store/chat";
+import { UiPopOver } from "@/components/ui/UiPopOver";
 import "./messageinput.scss";
 
 const schema = z.object({
@@ -56,11 +57,25 @@ export const MessageInput = () => {
           </button>
         </Tooltip>
 
-        <Tooltip label="Find an emoji" withArrow>
-          <button disabled={selectedchatid == ""}>
-            <MdOutlineEmojiEmotions size={22} />
-          </button>
-        </Tooltip>
+        <UiPopOver
+          target={
+            <Tooltip label="Find an emoji" withArrow>
+              <button type="button" disabled={selectedchatid == ""}>
+                <MdOutlineEmojiEmotions size={22} />
+              </button>
+            </Tooltip>
+          }
+          options={{ width: 200, trapFocus: true, withArrow: true, offset: 0 }}
+        >
+          <EmojiPicker
+            pickEmoji={(emoji) =>
+              form.setValue(
+                "message",
+                `${form.getValues("message") || ""}${emoji}`,
+              )
+            }
+          />
+        </UiPopOver>
 
         <Tooltip label="Send a image or file" withArrow>
           <button disabled={selectedchatid == ""}>
@@ -79,5 +94,39 @@ export const MessageInput = () => {
         </Tooltip>
       </div>
     </form>
+  );
+};
+
+const EmojiPicker = ({ pickEmoji }: { pickEmoji: (emoji: string) => void }) => {
+  const EMOJIS = [
+    "🇰🇪",
+    "🙂",
+    "👌",
+    "⛄",
+    "🦉",
+    "☯️",
+    "🧭",
+    "🔥",
+    "🎉",
+    "🃏",
+    "🕶️",
+    "📷",
+    "☢️",
+    "💯",
+    "👋",
+    "☀️",
+    "⚽",
+    "🎒",
+    "🛩",
+    "🥳",
+    "🪐",
+  ];
+
+  return (
+    <div id="emoji_picker">
+      {EMOJIS.map((_em) => (
+        <button onClick={() => pickEmoji(_em)}>{_em}</button>
+      ))}
+    </div>
   );
 };

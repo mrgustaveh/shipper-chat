@@ -45,3 +45,20 @@
     }
   }
 }
+
+#emoji_picker {
+  @include mixins.flexmixin(row, wrap, flex-start, space-between, 0.25rem);
+  padding: 0 0.375rem;
+
+  button {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+    background-color: colors.$bg_tertiary;
+    transition: all ease-in-out 0.25s;
+
+    &:hover {
+      background-color: colors.$divider;
+    }
+  }
+}
