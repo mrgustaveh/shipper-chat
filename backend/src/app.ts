@@ -9,7 +9,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || "*",
+    origin: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.includes(",")
+        ? process.env.CORS_ORIGIN.split(",")
+        : process.env.CORS_ORIGIN
+      : "*",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
