@@ -4,7 +4,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Tooltip, Loader } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { IoMicOutline } from "react-icons/io5";
+import { useVoiceRecorder } from "@/hooks/useVoiceRecorder";
+import {
+  IoMicOutline,
+  IoStopCircleOutline,
+  IoTrashOutline,
+} from "react-icons/io5";
 import { MdOutlineEmojiEmotions } from "react-icons/md";
 import { GrAttachment } from "react-icons/gr";
 import { TbSend } from "react-icons/tb";
@@ -16,13 +21,19 @@ import "./messageinput.scss";
 
 const schema = z.object({
   message: z.string().optional(),
-  mediaUrl: z.string().url().optional().or(z.literal("")),
-  mediaType: z.enum(["image", "doc"]).optional(),
 });
 
 type schematype = z.infer<typeof schema>;
 
 export const MessageInput = () => {
+  const {
+    isRecording,
+    recordingTime,
+    startRecording,
+    stopRecording,
+    cancelRecording,
+  } = useVoiceRecorder();
+
   const selectedchatid = useChatStore((s) => s.selectedChatId);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,20 +49,31 @@ export const MessageInput = () => {
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const MESSAGE = form.watch("message");
-  const MEDIA_URL = form.watch("mediaUrl");
 
   const onSendMessage = (args: schematype) => {
     const text = args.message || "";
+    if (!text.trim()) return;
+
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const links = text.match(urlRegex) || [];
 
-    const media =
-      args.mediaUrl && args.mediaType === "image" ? [args.mediaUrl] : [];
-    const docs =
-      args.mediaUrl && args.mediaType === "doc" ? [args.mediaUrl] : [];
-
-    sendMessage(text, media, links, docs);
+    sendMessage(text, [], links, []);
     form.reset();
+  };
+
+  const handleSendVoiceMessage = async (file: File) => {
+    try {
+      const res = await uploadMediaMutation.mutateAsync({ file });
+      sendMessage("", [], [], [], res.url);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      notifications.show({
+        title: "Upload failed",
+        message: "We couldn't send your voice message, try again",
+        color: "orange",
+        radius: "lg",
+      });
+    }
   };
 
   const onFileSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,11 +82,8 @@ export const MessageInput = () => {
 
     try {
       const res = await uploadMediaMutation.mutateAsync({ file });
-      form.setValue("mediaUrl", res.url);
-      form.setValue(
-        "mediaType",
-        file.type.startsWith("image/") ? "image" : "doc",
-      );
+      const isImage = file.type.startsWith("image/");
+      sendMessage("", isImage ? [res.url] : [], [], isImage ? [] : [res.url]);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       notifications.show({
@@ -80,81 +99,139 @@ export const MessageInput = () => {
     }
   };
 
+  const formatTime = (time: number) => {
+    const mins = Math.floor(time / 60);
+    const secs = time % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
   return (
     <form id="messageinput" onSubmit={form.handleSubmit(onSendMessage)}>
-      <input
-        type="text"
-        placeholder="Type any message..."
-        autoComplete="off"
-        autoCapitalize="off"
-        disabled={selectedchatid == ""}
-        onKeyUp={() => sendTyping(true)}
-        {...form.register("message")}
-      />
+      {isRecording ? (
+        <div className="recording_active">
+          <div className="recording_indicator">
+            <div className="red_dot animate-pulse"></div>
+            <span>Recording... {formatTime(recordingTime)}</span>
+          </div>
 
-      <div className="input_actions">
-        <Tooltip label="Record voice message" withArrow>
-          <button disabled={selectedchatid == ""}>
-            <IoMicOutline size={22} />
-          </button>
-        </Tooltip>
-
-        <UiPopOver
-          target={
-            <Tooltip label="Find an emoji" withArrow>
-              <button type="button" disabled={selectedchatid == ""}>
-                <MdOutlineEmojiEmotions size={22} />
+          <div className="recording_actions">
+            <Tooltip label="Cancel" withArrow>
+              <button
+                type="button"
+                className="cancel_btn"
+                onClick={cancelRecording}
+              >
+                <IoTrashOutline size={20} color="red" />
               </button>
             </Tooltip>
-          }
-          options={{ width: 200, trapFocus: true, withArrow: true, offset: 0 }}
-        >
-          <EmojiPicker
-            pickEmoji={(emoji) =>
-              form.setValue(
-                "message",
-                `${form.getValues("message") || ""}${emoji}`,
-              )
-            }
+
+            <Tooltip label="Send voice message" withArrow>
+              <button
+                type="button"
+                className="stop_btn"
+                onClick={async () => {
+                  const file = await stopRecording();
+                  if (file) {
+                    await handleSendVoiceMessage(file);
+                  }
+                }}
+                disabled={uploadMediaMutation.isPending}
+              >
+                {uploadMediaMutation.isPending ? (
+                  <Loader size={16} color="blue" />
+                ) : (
+                  <IoStopCircleOutline size={22} color="blue" />
+                )}
+              </button>
+            </Tooltip>
+          </div>
+        </div>
+      ) : (
+        <>
+          <input
+            type="text"
+            placeholder="Type any message..."
+            autoComplete="off"
+            autoCapitalize="off"
+            disabled={selectedchatid == ""}
+            onKeyUp={() => sendTyping(true)}
+            {...form.register("message")}
           />
-        </UiPopOver>
 
-        <Tooltip label="Send an image or file" withArrow>
-          <button
-            type="button"
-            disabled={selectedchatid == "" || uploadMediaMutation.isPending}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {uploadMediaMutation.isPending ? (
-              <Loader size={12} color="gray" />
-            ) : (
-              <GrAttachment size={18} />
-            )}
-          </button>
-        </Tooltip>
+          <div className="input_actions">
+            <Tooltip label="Record voice message" withArrow>
+              <button
+                type="button"
+                disabled={selectedchatid == ""}
+                onClick={startRecording}
+              >
+                <IoMicOutline size={22} />
+              </button>
+            </Tooltip>
 
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx"
-          onChange={onFileSelected}
-        />
+            <UiPopOver
+              target={
+                <Tooltip label="Find an emoji" withArrow>
+                  <button type="button" disabled={selectedchatid == ""}>
+                    <MdOutlineEmojiEmotions size={22} />
+                  </button>
+                </Tooltip>
+              }
+              options={{
+                width: 200,
+                trapFocus: true,
+                withArrow: true,
+                offset: 0,
+              }}
+            >
+              <EmojiPicker
+                pickEmoji={(emoji) =>
+                  form.setValue(
+                    "message",
+                    `${form.getValues("message") || ""}${emoji}`,
+                  )
+                }
+              />
+            </UiPopOver>
 
-        <Tooltip label="Send (Enter)" withArrow>
-          <button
-            type="submit"
-            className="send_message"
-            disabled={
-              selectedchatid == "" ||
-              (!MESSAGE?.trim() && !MEDIA_URL) ||
-              uploadMediaMutation.isPending
-            }
-          >
-            <TbSend size={20} />
-          </button>
-        </Tooltip>
-      </div>
+            <Tooltip label="Send an image or file" withArrow>
+              <button
+                type="button"
+                disabled={selectedchatid == "" || uploadMediaMutation.isPending}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {uploadMediaMutation.isPending ? (
+                  <Loader size={12} color="gray" />
+                ) : (
+                  <GrAttachment size={18} />
+                )}
+              </button>
+            </Tooltip>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx"
+              onChange={onFileSelected}
+            />
+
+            <Tooltip label="Send (Enter)" withArrow>
+              <button
+                type="submit"
+                className="send_message"
+                disabled={
+                  selectedchatid == "" ||
+                  !MESSAGE?.trim() ||
+                  uploadMediaMutation.isPending
+                }
+              >
+                <TbSend size={20} />
+              </button>
+            </Tooltip>
+          </div>
+        </>
+      )}
     </form>
   );
 };

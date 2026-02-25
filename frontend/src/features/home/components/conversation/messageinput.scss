@@ -44,6 +44,52 @@
       }
     }
   }
+
+  .recording_active {
+    @include mixins.flexmixin(row, nowrap, center, space-between, 0);
+    width: 100%;
+    padding: 0 0.5rem;
+
+    .recording_indicator {
+      @include mixins.flexmixin(row, nowrap, center, flex-start, 0.5rem);
+
+      .red_dot {
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        border-radius: 50%;
+        animation: pulse 1s infinite alternate;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.3;
+        }
+      }
+    }
+
+    .recording_actions {
+      @include mixins.flexmixin(row, nowrap, center, flex-end, 0.5rem);
+
+      button {
+        @include mixins.flexmixin(row, nowrap, center, center, 0);
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.5rem;
+      }
+
+      .stop_btn {
+        background-color: rgba(colors.$brand, 0.1);
+      }
+
+      .cancel_btn {
+        background-color: rgba(red, 0.1);
+      }
+    }
+  }
 }
 
 #emoji_picker {

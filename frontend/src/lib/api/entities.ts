@@ -14,6 +14,7 @@ export type Message = {
   media: string[];
   links: string[];
   docs: string[];
+  voiceUrl?: string | null;
   userChatId: string | null;
   created: string;
   sender?: Account;

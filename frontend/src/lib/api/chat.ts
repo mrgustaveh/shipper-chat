@@ -126,6 +126,10 @@ export const uploadMedia = async (
   });
 
   const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to upload file");
+  }
+
   return data;
 };
 

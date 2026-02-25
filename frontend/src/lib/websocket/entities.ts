@@ -12,6 +12,7 @@ export type ChatMessage = {
   media: string[];
   links: string[];
   docs: string[];
+  voice_url?: string | null;
   created: string;
 };
 

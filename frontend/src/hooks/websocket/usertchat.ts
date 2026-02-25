@@ -50,6 +50,7 @@ export const useRealTimeChat = ({ chatId }: args) => {
             media: data.media,
             links: data.links,
             docs: data.docs,
+            voiceUrl: data.voice_url,
             created: data.created,
             userChatId: chatId,
             sender: {
@@ -93,12 +94,14 @@ export const useRealTimeChat = ({ chatId }: args) => {
       media: string[] = [],
       links: string[] = [],
       docs: string[] = [],
+      voiceUrl?: string,
     ) => {
       socketRef.current?.emit("chat_message", {
         text_content: text,
         media,
         links,
         docs,
+        voiceUrl,
       });
     },
     [],

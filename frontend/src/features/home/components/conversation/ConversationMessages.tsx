@@ -7,6 +7,7 @@ import { useApiAuth } from "@/hooks/data/useapiauth";
 import { useChats } from "@/hooks/data/usechats";
 import type { Message } from "@/lib/api/entities";
 import { dateDistanceToNow, shortenString } from "@/lib/utils";
+import { VoiceMessagePlayer } from "./VoiceMessagePlayer";
 import "./conversationmessages.scss";
 
 export const ConversationMesssages = () => {
@@ -73,6 +74,7 @@ const ChatMessage = ({
   textContent,
   media = [],
   docs = [],
+  voiceUrl,
   currentUserId,
 }: messageprops) => {
   return (
@@ -81,6 +83,8 @@ const ChatMessage = ({
     >
       <div className="chat_message">
         <div className="_message_timer">
+          {voiceUrl && <VoiceMessagePlayer src={voiceUrl} />}
+
           {media.length > 0 && (
             <div className="_message_media">
               {media.map((url, i) => (
@@ -88,6 +92,7 @@ const ChatMessage = ({
               ))}
             </div>
           )}
+
           {docs.length > 0 && (
             <div className="_message_docs">
               {docs.map((url, i) => (
