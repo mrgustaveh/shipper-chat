@@ -56,13 +56,6 @@ export const VoiceMessagePlayer = ({ src }: { src: string }) => {
     setCurrentTime(newTime);
   };
 
-  const formatTime = (time: number) => {
-    if (isNaN(time)) return "0:00";
-    const mins = Math.floor(time / 60);
-    const secs = Math.floor(time % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
   return (
     <div className="voice_message_player">
       <audio ref={audioRef} src={src} preload="metadata" hidden />
