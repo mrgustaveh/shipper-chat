@@ -5,6 +5,7 @@ import { TfiExport } from "react-icons/tfi";
 import { GoTrash } from "react-icons/go";
 import { RxCross2 } from "react-icons/rx";
 import { useChatStore } from "../../store/chat";
+import { useChats } from "@/hooks/data/usechats";
 import "./contextmenu.scss";
 
 type props = {
@@ -12,19 +13,41 @@ type props = {
   closeContextMenu: () => void;
 };
 
-export const MessageContextMenu = ({ closeContextMenu }: props) => {
+export const MessageContextMenu = ({ chatId, closeContextMenu }: props) => {
+  const {
+    archiveChatMutation,
+    markChatReadMutation,
+    deleteChatMutation,
+    listChatsQuery,
+  } = useChats({ chatId });
+
+  const archiveChat = () => {
+    archiveChatMutation.mutateAsync({ chatId, archived: true }).then(() => {
+      closeContextMenu();
+    });
+  };
+
+  const markChatUnread = () => {
+    markChatReadMutation.mutateAsync({ chatId, read: false }).then(() => {
+      closeContextMenu();
+    });
+  };
+
   const deleteChat = () => {
-    useChatStore.setState({ chatMessages: [], selectedChatId: "" });
-    closeContextMenu();
+    deleteChatMutation.mutateAsync({ chatId }).then(() => {
+      useChatStore.setState({ chatMessages: [], selectedChatId: "" });
+      listChatsQuery.refetch();
+      closeContextMenu();
+    });
   };
 
   return (
     <div id="msg_context_menu">
-      <button onClick={closeContextMenu}>
+      <button onClick={markChatUnread}>
         <IoChatbubbleOutline size={18} /> Mark as unread
       </button>
 
-      <button onClick={closeContextMenu}>
+      <button onClick={archiveChat}>
         <BsArchive size={18} /> Archive
       </button>
 

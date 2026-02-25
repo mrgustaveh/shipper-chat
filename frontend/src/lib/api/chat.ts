@@ -128,3 +128,19 @@ export const uploadMedia = async (
   const data = await res.json();
   return data;
 };
+
+export const deleteChat = async (
+  args: {
+    chatId: string;
+  } & authArgs,
+): Promise<void> => {
+  const URL = BASE_URL + CHAT_ENDPOINTS.chats + `/${args.chatId}`;
+
+  await fetch(URL, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${args.token}`,
+    },
+  });
+};

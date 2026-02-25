@@ -5,6 +5,9 @@ import {
   createChat,
   listChatMessages,
   uploadMedia,
+  archiveChat,
+  markChatRead,
+  deleteChat,
 } from "@/lib/api/chat";
 
 type args = {
@@ -51,10 +54,34 @@ export const useChats = (args: args) => {
     },
   });
 
+  const archiveChatMutation = useMutation({
+    mutationFn: async (args: { chatId: string; archived: boolean }) => {
+      const token = await session?.getToken();
+      return archiveChat({ ...args, token: token ?? "" });
+    },
+  });
+
+  const markChatReadMutation = useMutation({
+    mutationFn: async (args: { chatId: string; read: boolean }) => {
+      const token = await session?.getToken();
+      return markChatRead({ ...args, token: token ?? "" });
+    },
+  });
+
+  const deleteChatMutation = useMutation({
+    mutationFn: async (args: { chatId: string }) => {
+      const token = await session?.getToken();
+      return deleteChat({ ...args, token: token ?? "" });
+    },
+  });
+
   return {
     listChatsQuery,
     listChatMessagesQuery,
     createChatMutation,
     uploadMediaMutation,
+    archiveChatMutation,
+    markChatReadMutation,
+    deleteChatMutation,
   };
 };

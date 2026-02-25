@@ -59,6 +59,7 @@ const MessagePreview = ({
   user2,
   created,
   messages,
+  unreadCount,
 }: messageProps) => {
   const [opened, { open, close }] = useDisclosure();
   const selectedchatid = useChatStore((s) => s.selectedChatId);
@@ -95,7 +96,10 @@ const MessagePreview = ({
                   ? shortenString(messages?.at(-1)?.textContent ?? "")
                   : "Start the conversation"}
               </span>
-              <RiCheckDoubleFill size={16} color={COLORS.success} />
+              <RiCheckDoubleFill
+                size={16}
+                color={unreadCount > 0 ? COLORS.bg_tertiary : COLORS.success}
+              />
             </p>
           </div>
         </button>
