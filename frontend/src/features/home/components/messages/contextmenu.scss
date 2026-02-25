@@ -1,0 +1,26 @@
+@use "../../../../styles/constants/colors" as colors;
+@use "../../../../styles/constants/mixins" as mixins;
+
+#msg_context_menu {
+  @include mixins.flexmixin(column, nowrap, center, flex-start, 0);
+  width: 100%;
+  padding: 0 0.5rem;
+
+  button {
+    @include mixins.flexmixin(row, nowrap, center, flex-start, 0.5rem);
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all ease-in-out 0.25s;
+
+    &:hover {
+      background-color: colors.$bg_tertiary;
+    }
+  }
+
+  .delete {
+    color: colors.$danger;
+  }
+}

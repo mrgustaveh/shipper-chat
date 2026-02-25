@@ -6,6 +6,7 @@ import { useChats } from "@/hooks/data/usechats";
 import { useChatStore } from "../../store/chat";
 import { useSearchStore } from "../../store/search";
 import { UiPopOver } from "@/components/ui/UiPopOver";
+import { MessageContextMenu } from "./MessageContextMenu";
 import { COLORS } from "@/lib/constants";
 import type { Account, Chat } from "@/lib/api/entities";
 import { dateDistanceToNow, shortenString } from "@/lib/utils";
@@ -67,8 +68,7 @@ const MessagePreview = ({
     <UiPopOver
       target={
         <button
-          id="message_preview"
-          className={selectedchatid == chatId ? "selected_chat" : ""}
+          className={`message_preview ${selectedchatid == chatId ? "selected_chat" : ""}`}
           onClick={() => useChatStore.setState({ selectedChatId: chatId })}
           onContextMenu={(e) => {
             e.preventDefault();
@@ -101,12 +101,14 @@ const MessagePreview = ({
         </button>
       }
       options={{
-        width: 300,
+        width: 200,
         opened: opened,
         onChange: close,
+        offset: -56,
+        shadow: "md",
       }}
     >
-      <p>message preview context menu</p>
+      <MessageContextMenu chatId={chatId} closeContextMenu={close} />
     </UiPopOver>
   );
 };
