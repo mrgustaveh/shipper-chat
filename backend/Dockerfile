@@ -33,4 +33,4 @@ COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 8001
 
-CMD ["sh", "-c", "sleep 5 && npx prisma migrate deploy && node dist/index.js"]
+CMD ["sh", "-c", "sleep 5 && npx prisma migrate deploy && node dist/src/index.js"]
