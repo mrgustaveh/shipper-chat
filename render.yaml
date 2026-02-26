@@ -30,6 +30,10 @@ services:
         sync: false
       - key: API_SECRET
         sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: NODE_OPTIONS
+        value: "--dns-result-order=ipv4first"
 
   - type: redis
     name: shipper-redis
