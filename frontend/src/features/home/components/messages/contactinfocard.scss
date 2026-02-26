@@ -1,0 +1,28 @@
+@use "../../../../styles/constants/colors" as colors;
+@use "../../../../styles/constants/mixins" as mixins;
+
+#contact_card_info {
+  @include mixins.flexmixin(column, nowrap, center, center, 0);
+  width: 100%;
+
+  img {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+  }
+
+  .name {
+    @include mixins.flexmixin(column, nowrap, center, center, 0);
+    text-align: center;
+
+    .uname {
+      font-weight: 600;
+    }
+
+    .email {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: colors.$text_secondary;
+    }
+  }
+}

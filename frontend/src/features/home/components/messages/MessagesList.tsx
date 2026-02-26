@@ -122,7 +122,11 @@ const MessagePreview = ({
         shadow: "md",
       }}
     >
-      <MessageContextMenu chatId={chatId} closeContextMenu={close} />
+      <MessageContextMenu
+        userId={renderuser?.accountId}
+        chatId={chatId}
+        closeContextMenu={close}
+      />
     </UiPopOver>
   );
 };

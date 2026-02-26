@@ -4,16 +4,23 @@ import { PiUserCircle } from "react-icons/pi";
 import { TfiExport } from "react-icons/tfi";
 import { GoTrash } from "react-icons/go";
 import { RxCross2 } from "react-icons/rx";
+import { UiPopOver } from "@/components/ui/UiPopOver";
 import { useChatStore } from "../../store/chat";
 import { useChats } from "@/hooks/data/usechats";
+import { ContactCardInfo } from "./ContactInfoCard";
 import "./contextmenu.scss";
 
 type props = {
   chatId: string;
+  userId: string;
   closeContextMenu: () => void;
 };
 
-export const MessageContextMenu = ({ chatId, closeContextMenu }: props) => {
+export const MessageContextMenu = ({
+  userId,
+  chatId,
+  closeContextMenu,
+}: props) => {
   const {
     archiveChatMutation,
     markChatReadMutation,
@@ -56,9 +63,21 @@ export const MessageContextMenu = ({ chatId, closeContextMenu }: props) => {
         <BsVolumeMute size={18} /> Mute
       </button>
 
-      <button>
-        <PiUserCircle size={18} /> Contact info
-      </button>
+      <UiPopOver
+        target={
+          <button>
+            <PiUserCircle size={18} /> Contact info
+          </button>
+        }
+        options={{
+          width: 200,
+          position: "right-start",
+          offset: 16,
+          shadow: "sm",
+        }}
+      >
+        <ContactCardInfo userId={userId} />
+      </UiPopOver>
 
       <button onClick={closeContextMenu}>
         <TfiExport size={18} />
