@@ -13,3 +13,8 @@ export const CHAT_ENDPOINTS = {
   messages: "/api/chat/messages",
   media: "/api/media/upload",
 };
+
+export const AI_ENDPOINTS = {
+  chat: "/api/ai/chat",
+  conversations: "/api/ai/conversations",
+};
