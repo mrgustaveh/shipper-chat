@@ -14,9 +14,10 @@ model Account {
   displayPic String?  @map("display_pic")
   created    DateTime @default(now())
 
-  chatsAsUser1  UserChat[]  @relation("User1")
-  chatsAsUser2  UserChat[]  @relation("User2")
-  messages      Message[]
+  chatsAsUser1     UserChat[]       @relation("User1")
+  chatsAsUser2     UserChat[]       @relation("User2")
+  messages         Message[]
+  aiConversations  AiConversation[]
 
   @@map("accounts")
 }
@@ -59,4 +60,29 @@ model Message {
   userChat  UserChat?  @relation(fields: [userChatId], references: [chatId], onDelete: Cascade)
 
   @@map("messages")
+}
+
+model AiConversation {
+  id        String   @id @default(uuid()) @db.Uuid
+  accountId String   @map("account_id") @db.Uuid
+  title     String   @default("New Chat")
+  created   DateTime @default(now())
+  updated   DateTime @updatedAt
+
+  account  Account     @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+  messages AiMessage[]
+
+  @@map("ai_conversations")
+}
+
+model AiMessage {
+  id             String   @id @default(uuid()) @db.Uuid
+  conversationId String   @map("conversation_id") @db.Uuid
+  role           String
+  content        String
+  created        DateTime @default(now())
+
+  conversation AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("ai_messages")
 }

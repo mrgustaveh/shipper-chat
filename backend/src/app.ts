@@ -3,6 +3,7 @@ import cors from "cors";
 import chatRoutes from "./routes/chat";
 import userRoutes from "./routes/user";
 import mediaRoutes from "./routes/media";
+import aiRoutes from "./routes/ai";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use("/api/chat", chatRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/media", mediaRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use(errorHandler);
 
