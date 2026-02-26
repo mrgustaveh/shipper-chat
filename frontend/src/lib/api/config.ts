@@ -1,5 +1,5 @@
-export const BASE_URL = "https://shipper-chat-backend.onrender.com";
-// export const BASE_URL = "http://localhost:8001";
+// export const BASE_URL = "https://shipper-chat-backend.onrender.com";
+export const BASE_URL = "http://localhost:8001";
 
 export const AUTH_ENDPOINTS = {
   me: "/api/user/me",

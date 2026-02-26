@@ -64,7 +64,7 @@ export default function Splash() {
 
   return (
     <section id="splash">
-      <div id="animation_ctr">
+      <div id="svg_animation_ctr">
         <SquigglyWave />
       </div>
 

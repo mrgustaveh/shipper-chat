@@ -29,6 +29,7 @@ export const MessageContextMenu = ({ chatId, closeContextMenu }: props) => {
 
   const markChatUnread = () => {
     markChatReadMutation.mutateAsync({ chatId, read: false }).then(() => {
+      listChatsQuery.refetch();
       closeContextMenu();
     });
   };

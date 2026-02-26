@@ -6,7 +6,7 @@
   width: 100vw;
   height: 100vh;
 
-  #animation_ctr {
+  #svg_animation_ctr {
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -153,4 +153,10 @@
       }
     }
   }
+}
+
+#animation_ctr {
+  @include mixins.flexmixin(row, nowrap, center, center, 0);
+  width: 100%;
+  height: 100%;
 }
