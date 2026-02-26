@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { RiCheckDoubleFill } from "react-icons/ri";
 import { useDisclosure } from "@mantine/hooks";
 import { useApiAuth } from "@/hooks/data/useapiauth";
 import { useChats } from "@/hooks/data/usechats";
@@ -7,7 +6,6 @@ import { useChatStore } from "../../store/chat";
 import { useSearchStore } from "../../store/search";
 import { UiPopOver } from "@/components/ui/UiPopOver";
 import { MessageContextMenu } from "./MessageContextMenu";
-import { COLORS } from "@/lib/constants";
 import type { Account, Chat } from "@/lib/api/entities";
 import { dateDistanceToNow, shortenString } from "@/lib/utils";
 import "./messageslist.scss";
@@ -64,13 +62,25 @@ const MessagePreview = ({
   const [opened, { open, close }] = useDisclosure();
   const selectedchatid = useChatStore((s) => s.selectedChatId);
   const renderuser: Account = authUserId == user1?.accountId ? user2 : user1;
+  const { markChatReadMutation, listChatsQuery } = useChats({});
+
+  const openConversation = () => {
+    useChatStore.setState({ selectedChatId: chatId });
+
+    markChatReadMutation.mutate(
+      { chatId, read: true },
+      {
+        onSuccess: () => listChatsQuery.refetch(),
+      },
+    );
+  };
 
   return (
     <UiPopOver
       target={
         <button
           className={`message_preview ${selectedchatid == chatId ? "selected_chat" : ""}`}
-          onClick={() => useChatStore.setState({ selectedChatId: chatId })}
+          onClick={openConversation}
           onContextMenu={(e) => {
             e.preventDefault();
             open();
@@ -96,10 +106,10 @@ const MessagePreview = ({
                   ? shortenString(messages?.at(-1)?.textContent ?? "")
                   : "Start the conversation"}
               </span>
-              <RiCheckDoubleFill
-                size={16}
-                color={unreadCount > 0 ? COLORS.bg_tertiary : COLORS.success}
-              />
+
+              {unreadCount > 0 && (
+                <span className="unread_counter">{unreadCount}</span>
+              )}
             </p>
           </div>
         </button>

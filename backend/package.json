@@ -16,10 +16,12 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@ai-sdk/google": "^3.0.31",
     "@clerk/clerk-sdk-node": "^4.13.23",
     "@prisma/adapter-pg": "^7.4.1",
     "@prisma/client": "^7.4.1",
     "@prisma/config": "^7.4.1",
+    "ai": "^6.0.100",
     "cloudinary": "^2.9.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
