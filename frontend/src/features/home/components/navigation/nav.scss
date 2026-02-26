@@ -42,6 +42,14 @@
   }
 
   .bottom {
+    .nav_action {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 0.875rem;
+      background-color: colors.$secondary;
+      color: colors.$bg_secondary;
+    }
+
     .profile_pic {
       margin-top: 1rem;
     }

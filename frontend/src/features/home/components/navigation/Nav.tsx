@@ -4,10 +4,12 @@ import { RiHome2Line } from "react-icons/ri";
 import { IoChatbubbleOutline, IoFolderOutline } from "react-icons/io5";
 import { MdOutlineExplore } from "react-icons/md";
 import { LuImage } from "react-icons/lu";
+import { useDisclosure } from "@mantine/hooks";
 import { useApiAuth } from "@/hooks/data/useapiauth";
 import { PiStarFour } from "react-icons/pi";
 import { UiPopOver } from "@/components/ui/UiPopOver";
 import { AppMenu } from "./AppMenu";
+import { AiChat } from "./AiChat";
 import "./nav.scss";
 
 type navaction = {
@@ -19,6 +21,7 @@ type navaction = {
 
 export const NavBar = () => {
   const { getAccountQuery } = useApiAuth();
+  const [opened, { open, close }] = useDisclosure();
 
   const navactions: navaction[] = [
     {
@@ -92,11 +95,29 @@ export const NavBar = () => {
       </div>
 
       <div className="bottom">
-        <Tooltip label="Ai Chat" withArrow>
-          <button className="nav_action">
-            <PiStarFour size={24} />
-          </button>
-        </Tooltip>
+        <UiPopOver
+          target={
+            <Tooltip label="Ai Chat" withArrow>
+              <button className="nav_action active" onClick={open}>
+                <PiStarFour size={24} />
+              </button>
+            </Tooltip>
+          }
+          options={{
+            opened: opened,
+            onChange: close,
+            trapFocus: true,
+            withArrow: true,
+            width: 480,
+            offset: -24,
+            shadow: "lg",
+            closeOnClickOutside: false,
+            closeOnEscape: false,
+            transitionProps: { transition: "pop", duration: 400 },
+          }}
+        >
+          <AiChat onclose={close} />
+        </UiPopOver>
 
         <img
           src={getAccountQuery?.data?.displayPic ?? "/icon-bg.png"}
