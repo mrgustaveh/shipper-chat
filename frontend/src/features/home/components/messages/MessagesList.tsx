@@ -68,7 +68,7 @@ const MessagePreview = ({
     useChatStore.setState({ selectedChatId: chatId });
 
     markChatReadMutation.mutate(
-      { chatId: selectedchatid, read: true },
+      { chatId, read: true },
       {
         onSuccess: () => listChatsQuery.refetch(),
       },
