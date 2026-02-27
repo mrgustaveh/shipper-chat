@@ -1,16 +1,17 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useAuth } from "@clerk/clerk-react";
+import { notifications } from "@mantine/notifications";
+import { Tooltip } from "@mantine/core";
 import ReactMarkdown from "react-markdown";
 import { RxCross2 } from "react-icons/rx";
 import { TbSend } from "react-icons/tb";
 import { VscSparkle } from "react-icons/vsc";
 import { FiTrash2, FiPlus } from "react-icons/fi";
 import { IoChevronBack } from "react-icons/io5";
-import { useAiChatStore, type AiConversation } from "../../store/ai";
-import { BASE_URL, AI_ENDPOINTS } from "@/lib/api/config";
+import { useAiChatStore } from "../../store/ai";
+import { useAiChat } from "@/hooks/data/useaichat";
 import { COLORS } from "@/lib/constants";
 import "./aichat.scss";
 
@@ -25,9 +26,7 @@ const chatschema = z.object({
 type chatschematype = z.infer<typeof chatschema>;
 
 export const AiChat = ({ onclose }: props) => {
-  const { getToken } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const hasFetched = useRef(false);
 
   const {
     conversations,
@@ -45,6 +44,13 @@ export const AiChat = ({ onclose }: props) => {
     setError,
   } = useAiChatStore();
 
+  const {
+    listConversationsQuery,
+    createConversationMutation,
+    deleteConversationMutation,
+    streamChatMutation,
+  } = useAiChat();
+
   const { register, reset, handleSubmit, watch } = useForm<chatschematype>({
     resolver: zodResolver(chatschema),
   });
@@ -59,44 +65,20 @@ export const AiChat = ({ onclose }: props) => {
     scrollToBottom();
   }, [messages]);
 
-  // Fetch conversations on mount
-  const fetchConversations = useCallback(async () => {
-    try {
-      const token = await getToken();
-      const res = await fetch(BASE_URL + AI_ENDPOINTS.conversations, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) return;
-      const data: AiConversation[] = await res.json();
-      setConversations(data);
-      if (data.length > 0 && !activeConversationId) {
-        setActiveConversation(data[0].id);
-      }
-    } catch (err) {
-      console.error("Failed to fetch AI conversations:", err);
-    }
-  }, [getToken, setConversations, setActiveConversation, activeConversationId]);
+  useEffect(() => {
+    setActiveConversation(null);
+  }, [setActiveConversation]);
 
   useEffect(() => {
-    if (!hasFetched.current) {
-      hasFetched.current = true;
-      fetchConversations();
+    if (listConversationsQuery.data) {
+      setConversations(listConversationsQuery.data);
     }
-  }, [fetchConversations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listConversationsQuery.data]);
 
   const createNewConversation = async () => {
     try {
-      const token = await getToken();
-      const res = await fetch(BASE_URL + AI_ENDPOINTS.conversations, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({}),
-      });
-      if (!res.ok) return;
-      const convo: AiConversation = await res.json();
+      const convo = await createConversationMutation.mutateAsync();
       addConversation(convo);
       setActiveConversation(convo.id);
     } catch (err) {
@@ -104,16 +86,18 @@ export const AiChat = ({ onclose }: props) => {
     }
   };
 
-  // Delete a conversation
   const deleteConversation = async (id: string) => {
     try {
-      const token = await getToken();
-      await fetch(BASE_URL + AI_ENDPOINTS.conversations + `/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await deleteConversationMutation.mutateAsync({ id });
       removeConversation(id);
     } catch (err) {
+      notifications.show({
+        title: "Failed to delete conversation",
+        message: "Please try again...",
+        loading: false,
+        radius: "lg",
+        color: "orange",
+      });
       console.error("Failed to delete conversation:", err);
     }
   };
@@ -122,25 +106,21 @@ export const AiChat = ({ onclose }: props) => {
     const userMessage = args.message.trim();
     if (!userMessage || isStreaming) return;
 
-    // Auto-create a conversation if none exists
     let convoId = activeConversationId;
     if (!convoId) {
       try {
-        const token = await getToken();
-        const res = await fetch(BASE_URL + AI_ENDPOINTS.conversations, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({}),
-        });
-        if (!res.ok) return;
-        const convo: AiConversation = await res.json();
+        const convo = await createConversationMutation.mutateAsync();
         addConversation(convo);
         setActiveConversation(convo.id);
         convoId = convo.id;
       } catch (err) {
+        notifications.show({
+          title: "Failed to create conversation",
+          message: "Please try again...",
+          loading: false,
+          radius: "lg",
+          color: "orange",
+        });
         console.error("Failed to create conversation:", err);
         return;
       }
@@ -153,27 +133,15 @@ export const AiChat = ({ onclose }: props) => {
     setStreaming(true);
 
     try {
-      const token = await getToken();
       const allMessages = [
         ...messages.map((m) => ({ role: m.role, content: m.content })),
         { role: "user" as const, content: userMessage },
       ];
 
-      const response = await fetch(BASE_URL + AI_ENDPOINTS.chat, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          messages: allMessages,
-          conversationId: convoId,
-        }),
+      const response = await streamChatMutation.mutateAsync({
+        messages: allMessages,
+        conversationId: convoId,
       });
-
-      if (!response.ok) {
-        throw new Error("Failed to get AI response");
-      }
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
@@ -191,8 +159,7 @@ export const AiChat = ({ onclose }: props) => {
         updateLastAssistantMessage(accumulated);
       }
 
-      // Refresh conversations to get updated title
-      await fetchConversations();
+      listConversationsQuery.refetch();
     } catch (err) {
       console.error("AI chat error:", err);
       setError("Something went wrong. Please try again.");
@@ -212,13 +179,14 @@ export const AiChat = ({ onclose }: props) => {
       <div className="title_close">
         <div className="title_left">
           {activeConversationId && conversations.length > 0 && (
-            <button
-              className="back_btn"
-              onClick={() => setActiveConversation(null)}
-              title="All conversations"
-            >
-              <IoChevronBack size={16} />
-            </button>
+            <Tooltip label="All conversations" withArrow zIndex={20000}>
+              <button
+                className="back_btn"
+                onClick={() => setActiveConversation(null)}
+              >
+                <IoChevronBack size={16} />
+              </button>
+            </Tooltip>
           )}
           <VscSparkle size={18} />
           <p>{activeConversationId ? "AI Chat" : "Conversations"}</p>
@@ -226,26 +194,27 @@ export const AiChat = ({ onclose }: props) => {
 
         <div className="title_actions">
           {activeConversationId && (
-            <button
-              className="action_btn"
-              onClick={() => deleteConversation(activeConversationId)}
-              title="Delete conversation"
-            >
-              <FiTrash2 size={15} />
-            </button>
+            <Tooltip label="Delete conversation" withArrow zIndex={20000}>
+              <button
+                className="action_btn"
+                onClick={() => deleteConversation(activeConversationId)}
+              >
+                <FiTrash2 size={15} />
+              </button>
+            </Tooltip>
           )}
 
-          <button
-            className="action_btn"
-            onClick={createNewConversation}
-            title="New conversation"
-          >
-            <FiPlus size={17} />
-          </button>
+          <Tooltip label="New conversation" withArrow zIndex={20000}>
+            <button className="action_btn" onClick={createNewConversation}>
+              <FiPlus size={17} />
+            </button>
+          </Tooltip>
 
-          <button className="close_btn" onClick={onclose}>
-            <RxCross2 size={18} />
-          </button>
+          <Tooltip label="Close" withArrow zIndex={20000}>
+            <button className="close_btn" onClick={onclose}>
+              <RxCross2 size={18} />
+            </button>
+          </Tooltip>
         </div>
       </div>
 
@@ -278,15 +247,17 @@ export const AiChat = ({ onclose }: props) => {
                     {convo.messages.length !== 1 ? "s" : ""}
                   </p>
                 </div>
-                <button
-                  className="convo_delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteConversation(convo.id);
-                  }}
-                >
-                  <FiTrash2 size={13} />
-                </button>
+                <Tooltip label="Delete Conversation" withArrow zIndex={20000}>
+                  <button
+                    className="convo_delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteConversation(convo.id);
+                    }}
+                  >
+                    <FiTrash2 size={20} />
+                  </button>
+                </Tooltip>
               </button>
             ))
           )}
